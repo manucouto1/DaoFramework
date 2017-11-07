@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<querys>
+	<query name="findAll" value="test">
+		<script>SELECT * FROM libro;</script>
+	</query>
+	
+	<query name="findOne" var="id">
+		<script>SELECT * FROM libro where id = [id];</script>
+	</query>
+	<query name="add" var="libro" value="test">
+		<script>INSERT INTO LIBRO VALUES ([libro.id],[libro.titulo],[libro.paginas]);</script>
+	</query>
+	<query name="delete" var="id">
+		<script>DELETE FROM LIBRO WHERE ID = [id];</script>
+	</query>
+	<query name="update" var="libro">
+		<script>UPDATE LIBRO SET titulo = [libro.titulo], paginas = [libro.paginas] WHERE id = [libro.id];</script>
+	</query>
+</querys>
