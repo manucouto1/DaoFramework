@@ -1,19 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <querys>
-	<query name="findAll" value="test">
+
+	<query name="findAll">
 		<script>SELECT * FROM libro;</script>
 	</query>
 	
-	<query name="findOne" var="id">
+	<query name="findOne">
 		<script>SELECT * FROM libro where id = [id];</script>
 	</query>
-	<query name="add" var="libro" value="test">
-		<script>INSERT INTO LIBRO VALUES ([libro.id],[libro.titulo],[libro.paginas]);</script>
+	<query name="add">
+		<script>INSERT INTO LIBRO VALUES ([libro.id],[libro.titulo],[libro.paginas],[libro.autor]);</script>
 	</query>
-	<query name="delete" var="id">
+	<query name="delete">
 		<script>DELETE FROM LIBRO WHERE ID = [id];</script>
 	</query>
-	<query name="update" var="libro">
-		<script>UPDATE LIBRO SET titulo = [libro.titulo], paginas = [libro.paginas] WHERE id = [libro.id];</script>
+	<query name="update" var="id,titulo,paginas,autor">
+		<script>UPDATE LIBRO SET titulo = [titulo], paginas = [paginas], id_autor = [autor] WHERE id = [id];</script>
 	</query>
+	<query name="findByTitlePages" var="titulo,paginas">
+		<script>SELECT * FROM LIBRO WHERE titulo = [titulo] AND PAGINAS = [paginas];</script>
+	</query>
+	<query name="findLibrosFromAutor" var="autor">
+		<script>SELECT * 
+		FROM LIBRO L INNER JOIN AUTOR AUT 
+		ON L.ID_AUTOR = AUT.ID
+		WHERE AUT.ID = [autor.id];</script>
+	</query>
+	
 </querys>

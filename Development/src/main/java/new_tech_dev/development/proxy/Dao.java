@@ -20,23 +20,38 @@ public class Dao<T> {
 					public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 						String method_name = method.getName();
 						Type[] genericInterfaces = clazz.getGenericInterfaces();
-						Executor ex = null;
+						Type[] types = method.getParameterTypes();
+						Type[] typos = null ;
+						Executor<T> ex = null;
+						
 						for (Type genericInterface : genericInterfaces) {
 						    if (genericInterface instanceof ParameterizedType) {
 						        Type[] genericTypes = ((ParameterizedType) genericInterface).getActualTypeArguments();
-//						        for (Type genericType : genericTypes) {
-//						            System.out.println("Generic type: " + genericType);
-//						        }
+						        typos = genericTypes;
 						        Class<?> c = Class.forName(genericTypes[0].getTypeName());
-						        ex = new Executor(c);
+						        // TODO Usar una cache en vez del ejecutor y guardar el ejecutor en la cache
+						        ex = new Executor<>(c);
 						    }
 						}
-		                if(method.getGenericParameterTypes().length>0){
-		                	return (T) ex.execute(method_name, args[0]);
-		                } else {
-		                	return (T) ex.execute(method_name, null);
-		                }
 						
+						if(method.getGenericParameterTypes().length > 0){
+							if((method_name.equalsIgnoreCase("findOne")||
+							   method_name.equalsIgnoreCase("delete")||
+							   method_name.equalsIgnoreCase("update")||
+							   method_name.equalsIgnoreCase("add")) && (method.getGenericParameterTypes().length==1)
+							   ){
+								return ex.execute(method_name, typos[0], args[0]);
+							}else{
+								return ex.execute(method_name,types,args);
+//									return ex.execute(method_name,typos,args);
+//								} else {
+//									return ex.execute(method_name,typos,args);
+//									return ex.execute(method_name,types,args);
+//								}
+							}
+			            } else {
+			                	return ex.execute(method_name, types);
+			            }
 					}
 	            	
 	            });

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<querys>
+	<query name="findAll">
+		<script>SELECT * FROM AUTOR;</script>
+	</query>
+	<query name="findOne">
+		<script>SELECT * FROM AUTOR WHERE id = [id];</script>
+	</query>
+	<query name="add">
+		<script>INSERT INTO AUTOR VALUES ([autor.id],[autor.name]);</script>
+	</query>
+	<query name="delete">
+		<script>DELETE FROM AUTOR WHERE ID = [id];</script>
+	</query>
+</querys>

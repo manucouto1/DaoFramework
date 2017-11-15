@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <querys>
-	<query name="findAll" value="test">
+	<query name="findAll">
 		<script>SELECT * FROM libro;</script>
 	</query>
 	
-	<query name="findOne" var="id">
+	<query name="findOne">
 		<script>SELECT * FROM libro where id = [id];</script>
 	</query>
-	<query name="add" var="libro" value="test">
+	<query name="add">
 		<script>INSERT INTO LIBRO VALUES ([libro.id],[libro.titulo],[libro.paginas]);</script>
 	</query>
-	<query name="delete" var="id">
+	<query name="delete">
 		<script>DELETE FROM LIBRO WHERE ID = [id];</script>
+	</query>
+	
+	<query name="findByIdTitulo">
+		<script>SELECT FROM LIBRO WERE ID = [libro.id] AND TITULO = [libro.titulo];</script>
 	</query>
 </querys>

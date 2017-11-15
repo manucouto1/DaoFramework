@@ -24,19 +24,19 @@ public class Container {
 	
 	public <T> void put (Class <T> param1) throws Exception {
 		if(null == daoContainer.get(param1)){
-			daoContainer.put(param1, new Dao<>(param1));
+			daoContainer.put(param1, new Dao<T>(param1));
 		}else{
 			throw new Exception("Executor ya creado");
 		}
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <T> T getInstance (Class <T> param) {
+	public <T> T getInstance (Class <?> param) {
 		return (T) contenedor.get(param);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <T> T getDao (Class <T> param) {
+	public <T> T getDao (Class <?> param) {
 		return (T) daoContainer.get(param).getDao();
 	}
 	

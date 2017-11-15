@@ -15,19 +15,25 @@ public class DomReader {
 	
 	private File xmlFile;
 	private Map<String,String> querys = new HashMap<>();
+	private Map<String,String[]> args = new HashMap<>();
+	private Document document;
 	
 	public DomReader(String url) {
-		this.xmlFile = new File(url+"Dao");
-//		this.parts = url.split("Dao");
-	}
-	
-	public Map<String, String> getQuerys() {
+		
 		int i = 0;
+		this.xmlFile = new File(url+"Dao");
 		SAXBuilder builder = new SAXBuilder();
-		Document document;
+		
+		try {
+			document = (Document) builder.build("src/main/resources/"+xmlFile+".xml");
+		} catch (JDOMException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		try {
 			// Accedemos al documento y nos colocamos en el nodo padre
-			document = (Document) builder.build("src/main/resources/"+xmlFile+".xml");
 			Element rootNode = document.getRootElement();
 			// Listamos los hijos
 			List<?> list = rootNode.getChildren();
@@ -36,38 +42,25 @@ public class DomReader {
 				Element e = (Element)list.get(i);
 				if(null !=e.getAttribute("name")){
 					querys.put(e.getAttribute("name").getValue(),e.getChildText("script"));
+					if(null!=e.getAttribute("var")){
+						args.put(e.getAttribute("name").getValue(),e.getAttribute("var").getValue().split(","));
+					}
 				}
 				i++;
 			}
-			return querys;
 			
-		} catch (JDOMException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+	}
+	
+	public Map<String, String> getQuerys() {
 		return querys;
 	}
 	
+	public Map<String,String[]> getArgs(){
+		return args;
+	}
 	
-//	private HashMap<String,String> listAttributes(Element e) {
-//		
-//		Map<String,String> attributes = new HashMap<>();
-//		List<Attribute> list = e.getAttributes();
-//		
-//		for(int i=0; i<list.size(); i++){
-//			attributes.put(list.get(i).getName(),list.get(i).getValue());
-//		}
-//		return (HashMap<String, String>) attributes;
-//	}
-	
-	
-
 
 }

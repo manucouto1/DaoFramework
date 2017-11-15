@@ -1,10 +1,12 @@
 package new_tech_test.test.entities;
 
+
 public abstract class Libro {
 	
 	private int id;
 	private String titulo;
 	private int paginas;
+	private int autor;
 	
 	
 	public int getId() {
@@ -29,6 +31,14 @@ public abstract class Libro {
 
 	public void setPaginas(int paginas) {
 		this.paginas = paginas;
+	}
+
+	public int getAutor() {
+		return autor;
+	}
+
+	public void setAutor(int autor) {
+		this.autor = autor;
 	}
 
 	public abstract void leer();

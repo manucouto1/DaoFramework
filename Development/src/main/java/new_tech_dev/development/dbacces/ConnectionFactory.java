@@ -39,7 +39,12 @@ public class ConnectionFactory {
 		try{
 			rs = stmt.executeQuery(query);
 		}catch(Exception e){
-			stmt.executeUpdate(query);
+			try{
+				stmt.executeUpdate(query);
+			}catch(Exception ex) {
+				e.printStackTrace();
+				ex.printStackTrace();
+			}
 		}
 		return rs;
 		
