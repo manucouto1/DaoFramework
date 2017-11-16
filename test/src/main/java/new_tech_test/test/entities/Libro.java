@@ -1,21 +1,12 @@
 package new_tech_test.test.entities;
 
+import new_tech_dev.development.base_entity.BaseEntity;
 
-public abstract class Libro {
+public abstract class Libro extends BaseEntity{
 	
-	private int id;
 	private String titulo;
 	private int paginas;
 	private int autor;
-	
-	
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
 
 	public String getTitulo() {
 		return titulo;
@@ -45,7 +36,7 @@ public abstract class Libro {
 
 	@Override
 	public String toString() {
-		return "Libro [id=" + id + ", titulo=" + titulo + ", paginas=" + paginas + "]";
+		return "Libro [id=" + super.getId() + ", titulo=" + titulo + ", paginas=" + paginas + "]";
 	}
 	
 	

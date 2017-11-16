@@ -6,6 +6,6 @@ public interface GenericDao <T>{
 	public void add(T e);
 	public T findOne(T e);
 	public List<T> findAll();
-	public void delete(T id);
+	public void delete(T e);
 	public void update(T e);
 }

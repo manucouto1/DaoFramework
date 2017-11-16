@@ -7,10 +7,18 @@
 	<query name="findOne">
 		<script>SELECT * FROM AUTOR WHERE id = [id];</script>
 	</query>
-	<query name="add">
+	<query name="add" var="autor">
 		<script>INSERT INTO AUTOR VALUES ([autor.id],[autor.name]);</script>
 	</query>
-	<query name="delete">
-		<script>DELETE FROM AUTOR WHERE ID = [id];</script>
+	<query name="delete" var="libro">
+		<script>DELETE FROM AUTOR WHERE ID = [libro.id];</script>
+	</query>
+	
+	<query name="findByComicNovela" var="comic,novela">
+		<script>
+		SELECT A.* 
+		FROM AUTOR A INNER JOIN LIBRO L
+		ON A.id = L.id_autor
+		WHERE L.titulo = [comic.titulo] AND L.paginas = [novela.paginas];</script>
 	</query>
 </querys>

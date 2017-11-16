@@ -8,14 +8,23 @@
 	<query name="findOne">
 		<script>SELECT * FROM libro where id = [id];</script>
 	</query>
-	<query name="add">
+	<query name="add" var="libro">
 		<script>INSERT INTO LIBRO VALUES ([libro.id],[libro.titulo],[libro.paginas]);</script>
 	</query>
-	<query name="delete">
-		<script>DELETE FROM LIBRO WHERE ID = [id];</script>
+	<query name="delete" var="libro">
+		<script>DELETE FROM LIBRO WHERE ID = [libro.id];</script>
 	</query>
 	
-	<query name="findByIdTitulo">
+	<query name="findByIdTitulo" var="libro">
 		<script>SELECT FROM LIBRO WERE ID = [libro.id] AND TITULO = [libro.titulo];</script>
+	</query>
+	
+	<query name="findByAutorTitle" var="autor,titulo">
+		<script>
+		SELECT L.* 
+		FROM LIBRO L INNER JOIN AUTOR A
+		ON L.id_autor = A.id
+		WHERE A.name = [autor.name] and L.titulo = [titulo];
+		</script>
 	</query>
 </querys>

@@ -33,7 +33,7 @@ public class Executor <T>{
 			this.argsName = dReader.getArgs();
 			this.generic = clazz;
 			
-			try{
+			try {
 				this.constructor = clazz.getConstructors()[1];
 			} catch(Exception e) {
 				this.constructor = clazz.getConstructors()[0];
@@ -42,52 +42,62 @@ public class Executor <T>{
 			this.types = constructor.getParameterTypes();
 	}
 	
-	public List<?> execute(String action, Type[] types, Object... args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException, IllegalArgumentException, InvocationTargetException{
-			String query = processQuery(querys.get(action), types, argsName.get(action), args).toUpperCase();
-			List<?> result = null;
-			ResultSet rs;
-			rs = executeQuery(query);
-			if(null != rs){
-				if(rs.getFetchSize()>1){
-					result = processMultyResult(rs);
-				} else {
-					result = processMultyResult(rs);
-				}
+	public Object executeOne(String action, Type[] types, Object[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException, IllegalArgumentException, InvocationTargetException{
+		
+			String query;
+			if(allBaseEntity(args)){
+				query = processAllBEQuery(querys.get(action), types, argsName.get(action), filterBaseArgs(args)).toUpperCase();
+			} else if(anyBaseEntity(args)){
+				query = processQuery(querys.get(action), types, argsName.get(action), args).toUpperCase();
+			} else {
+				query = processQuery(querys.get(action), types, argsName.get(action), args).toUpperCase();
 			}
-			return (null != result)? result: (result=new ArrayList<>());
-	}
-	
-	public List<?> execute(String action, Type type, Object obj) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException, IllegalArgumentException, InvocationTargetException{
-			String query = processQuery(querys.get(action), type, obj).toUpperCase();
-			List<?> result = null;
-			ResultSet rs;
-			rs = executeQuery(query);
+			
+			ResultSet rs = executeQuery(query);
 			if(null != rs){
-				if(rs.getFetchSize()>1){
-					result = processMultyResult(rs);
-				} else {
-					result = processMultyResult(rs);
-				}
+				if(rs.next()){
+					return  processSingleResult(rs);
+				} 
 			}
-			return (null != result)? result: (result=new ArrayList<>());
+			return null;
 	}
 	
-	public List<?> execute(String action, Type type, Integer id) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException, IllegalArgumentException, InvocationTargetException{
-			String query = processQuery(querys.get(action), type, id).toUpperCase();
-			List<?> result;
-			result = processMultyResult(executeQuery(query));
-			return result;
+	public List<?> execute(String action, Type[] types, Object[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException, IllegalArgumentException, InvocationTargetException{
+
+			String query = new String();
+			if(allBaseEntity(args)){
+				query = processAllBEQuery(querys.get(action), types, argsName.get(action), args).toUpperCase();
+			} else if(anyBaseEntity(args)){
+				query = processQuery(querys.get(action), types, argsName.get(action), args).toUpperCase();
+			} else {
+				query = processQuery(querys.get(action), types, argsName.get(action), args).toUpperCase();
+			}
+			
+			return processMultyResult(executeQuery(query));
 	}
 	
-	public List<?> execute(String action) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException, IllegalArgumentException, InvocationTargetException{
+	public List<?> executeNoParams(String action) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SQLException{
+		
 			String query = querys.get(action);
-			List<?> result;
-			result = processMultyResult(executeQuery(query));
-			return  result;
+			return processMultyResult(executeQuery(query));
+	}
+	
+	public Object executeOneNoParams(String action) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SQLException{
+		
+			String query = querys.get(action);
+			ResultSet rs = executeQuery(query);
+			if(null != rs){
+				if(rs.next()){
+					return  processSingleResult(rs);
+				} 
+			}
+			return null;
+		
 	}
 	
 	public ResultSet executeQuery(String query) {
-			ResultSet rs=null;
+			
+			ResultSet rs = null;
 			try {
 				rs = conexion.execute(query);
 			} catch (Exception e) {
@@ -101,16 +111,19 @@ public class Executor <T>{
 			List<Object> resultSet= new ArrayList<>();
 			Object objeto = null;
 			int i = 1;
-			if (null!=rs){
-				for(Class<?> clazz: types){
-					if(clazz.equals(String.class)){
+			if (null!=rs) {
+				for (Class<?> clazz: types) {
+					if (clazz.equals(String.class)) {
 						resultSet.add(rs.getString(i));
 					}
-					if(clazz.equals(Integer.class)){
+					if (clazz.equals(Integer.class)) {
 						resultSet.add(rs.getInt(i));
 					}
-					if(clazz.equals(Boolean.class)){
+					if (clazz.equals(Boolean.class)) {
 						resultSet.add(rs.getBoolean(i));
+					}
+					if (clazz.equals(Double.class)) {
+						resultSet.add(rs.getDouble(i));
 					}
 					i++;
 				}
@@ -130,64 +143,8 @@ public class Executor <T>{
 		
 	}
 	
-	private String processQuery(String query, Type type, Object obj) {
-			String result;
-			String [] trozos;
-			String aux;
-			Method method;
-				if (query.contains("[")) {
-					trozos = query.split("\\[");
-					result = trozos[0];
-					for(int i = 1; i<trozos.length; i++){
-						aux = trozos[i].split("\\]")[1];
-						trozos[i] = trozos[i].split("\\]")[0];
-						if(trozos[i].contains(".")){
-							trozos[i] = trozos[i].split("\\.")[1];
-						}
-						try {
-							if(obj instanceof Integer){
-								method = generic.getMethod("get" + trozos[i].substring(0,1).toUpperCase() 
-										+ trozos[i].substring(1), (Class<?>[]) null);
-								
-								if(method.getReturnType().equals(String.class)){
-									result += "'" + method.invoke(obj, (Object[]) null) + "'";
-								}else{
-									result += method.invoke(obj, (Object[]) null);
-								}
-								result += aux;
-								
-							} else {
-								method = Class.forName(type.getTypeName()).getMethod("get" + trozos[i].substring(0,1).toUpperCase() 
-										+ trozos[i].substring(1), (Class<?>[]) null);
-								
-								if(method.getReturnType().equals(String.class)){
-									result += "'" + method.invoke(obj, (Object[]) null) + "'";
-								}else{
-									result += method.invoke(obj, (Object[]) null);
-								}
-								result += aux;
-							}
-	
-						} catch (NoSuchMethodException | SecurityException e) {
-							e.printStackTrace();
-						} catch (IllegalAccessException e) {
-							e.printStackTrace();
-						} catch (IllegalArgumentException e) {
-							e.printStackTrace();
-						} catch (InvocationTargetException e) {
-								e.printStackTrace();
-						} catch (ClassNotFoundException e) {
-							e.printStackTrace();
-						}
-					}
-			}else{
-				result = query;
-			}
-				
-			return result;
-	}
-	
-	private String processQuery(String query, Type[] types, String[] names, Object... obj) {
+	private String processQuery(String query, Type[] types, String[] names, Object[] obj) {
+		
 			String result;
 			String [] trozos;
 			Class<?> clase = null;
@@ -195,10 +152,10 @@ public class Executor <T>{
 				if (query.contains("[")) {
 					trozos = query.split("\\[");
 					result = trozos[0];
-					for(int i = 1; i<trozos.length; i++){
+					for (int i = 1; i<trozos.length; i++) {
 						aux = trozos[i].split("\\]")[1];
 						trozos[i] = trozos[i].split("\\]")[0];
-						if(trozos[i].contains(".")){
+						if (trozos[i].contains(".")) {
 							trozos[i] = trozos[i].split("\\.")[1];
 						}
 						try {
@@ -207,14 +164,14 @@ public class Executor <T>{
 							e.printStackTrace();
 						}
 						
-						if(clase.cast(obj[i-1]) instanceof BaseEntity){
+						if (clase.cast(obj[i-1]) instanceof BaseEntity) {
 							Method method = null;
 							try {
 								method = clase.getMethod("get" + trozos[i].substring(0,1).toUpperCase() 
 											+ trozos[i].substring(1), (Class<?>[]) null);
-								if(method.getReturnType().equals(String.class)){
+								if (method.getReturnType().equals(String.class)) {
 									result += "'" + method.invoke(obj[i-1], (Object[]) null) + "'";
-								}else{
+								} else {
 									result += method.invoke(obj[i-1], (Object[]) null);
 								}
 								result += aux;
@@ -230,12 +187,13 @@ public class Executor <T>{
 							} catch (InvocationTargetException e) {
 								e.printStackTrace();
 							}
+							
 						} else {
-							for(int j=0; j<names.length; j++){
-								if(trozos[i].equalsIgnoreCase(names[j])){
-									if(types[j].equals(String.class)){
+							for (int j=0; j<names.length; j++) {
+								if (trozos[i].equalsIgnoreCase(names[j])) {
+									if (types[j].equals(String.class)) {
 										result+="'"+obj[j]+"'";
-									}else{
+									} else {
 										result+=obj[j];
 									}
 									result+=aux;
@@ -244,13 +202,101 @@ public class Executor <T>{
 						}
 					}
 					
-			}else{
+			} else {
 				result = query;
 			}
 				
 			return result;
+}
+	
+	private String processAllBEQuery(String query, Type[] types, String[] names, Object[] obj ){
+		
+			String result;
+			String [] trozos;
+			String aux;
+			Method method;
+			if (query.contains("[")) {
+				trozos = query.split("\\[");
+				result = trozos[0];
+				for (int i = 1; i<trozos.length; i++) {
+					aux = trozos[i].split("\\]")[1];
+					trozos[i] = trozos[i].split("\\]")[0];
+					if (trozos[i].contains(".")) {
+						String[] elements = trozos[i].split("\\.");
+						trozos[i] = elements[1];
+						for (int j=0; j<names.length; j++) {
+							if (names[j].contains(elements[0])) {
+								try {
+									Class<?> clase = Class.forName(types[j].getTypeName());
+									method = clase.getMethod("get" + trozos[i].substring(0,1).toUpperCase() 
+											+ trozos[i].substring(1), (Class<?>[]) null);
+									
+									if (method.getReturnType().equals(String.class)) {
+										result += "'" + method.invoke(obj[j], (Object[]) null) + "'";
+									} else {
+										result += method.invoke(obj[j], (Object[]) null);
+									}
+									result += aux;
+									
+								} catch (ClassNotFoundException e) {
+									e.printStackTrace();
+								} catch (NoSuchMethodException e) {
+									e.printStackTrace();
+								} catch (SecurityException e) {
+									e.printStackTrace();
+								} catch (IllegalAccessException e) {
+									e.printStackTrace();
+								} catch (IllegalArgumentException e) {
+									e.printStackTrace();
+								} catch (InvocationTargetException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					}
+					
+				}
+			}else{
+				result = query;
+			}
+			return result;
+}
+	
+//  Utilities 
+	
+	private boolean allBaseEntity(Object[] args){
+			
+			boolean result = true;
+			for(Object obj : args) {
+				if(!(obj instanceof BaseEntity)) {
+					result = false;
+					break;
+				}
+			}
+			return result;
 	}
 	
+	private boolean anyBaseEntity(Object[] args){
+			
+			boolean result = false;
+			for(Object obj : args) {
+				if((obj instanceof BaseEntity)) {
+					result = true;
+					break;
+				}
+			}
+			return result;
+	}
 	
-
+	private Object[] filterBaseArgs(Object[] args){
+			
+			List<Object> result = new ArrayList<>();
+			for(Object obj: args){
+				if(obj instanceof BaseEntity){
+					result.add(obj);
+				}
+			}
+			return result.toArray();
+	}
+	
 }

@@ -6,14 +6,14 @@
 		<script>SELECT * FROM libro;</script>
 	</query>
 	
-	<query name="findOne">
-		<script>SELECT * FROM libro where id = [id];</script>
+	<query name="findOne" var="libro">
+		<script>SELECT * FROM libro where id = [libro.id];</script>
 	</query>
-	<query name="add">
+	<query name="add" var="libro">
 		<script>INSERT INTO LIBRO VALUES ([libro.id],[libro.titulo],[libro.paginas],[libro.autor]);</script>
 	</query>
-	<query name="delete">
-		<script>DELETE FROM LIBRO WHERE ID = [id];</script>
+	<query name="delete" var="libro">
+		<script>DELETE FROM LIBRO WHERE ID = [libro.id];</script>
 	</query>
 	<query name="update" var="id,titulo,paginas,autor">
 		<script>UPDATE LIBRO SET titulo = [titulo], paginas = [paginas], id_autor = [autor] WHERE id = [id];</script>
@@ -22,7 +22,7 @@
 		<script>SELECT * FROM LIBRO WHERE titulo = [titulo] AND PAGINAS = [paginas];</script>
 	</query>
 	<query name="findLibrosFromAutor" var="autor">
-		<script>SELECT * 
+		<script>SELECT L.* 
 		FROM LIBRO L INNER JOIN AUTOR AUT 
 		ON L.ID_AUTOR = AUT.ID
 		WHERE AUT.ID = [autor.id];</script>
