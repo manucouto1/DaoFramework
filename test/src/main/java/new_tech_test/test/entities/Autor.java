@@ -9,6 +9,12 @@ public class Autor extends BaseEntity{
 		setId(id);
 		this.name = name;
 	}
+	public void setId(Integer id){
+		super.id = id;
+	}
+	public Integer getId(){
+		return super.id;
+	}
 	public String getName() {
 		return name;
 	}

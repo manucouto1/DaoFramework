@@ -7,7 +7,15 @@ public abstract class Libro extends BaseEntity{
 	private String titulo;
 	private int paginas;
 	private int autor;
-
+	
+	public Integer getId(){
+		return super.id;
+	}
+	
+	public void setId(Integer id){
+		super.id = id;
+	}
+	
 	public String getTitulo() {
 		return titulo;
 	}
@@ -36,7 +44,7 @@ public abstract class Libro extends BaseEntity{
 
 	@Override
 	public String toString() {
-		return "Libro [id=" + super.getId() + ", titulo=" + titulo + ", paginas=" + paginas + "]";
+		return "Libro [id=" + getId() + ", titulo=" + titulo + ", paginas=" + paginas + "]";
 	}
 	
 	

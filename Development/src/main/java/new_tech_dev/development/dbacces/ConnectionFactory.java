@@ -11,7 +11,9 @@ import com.mysql.cj.jdbc.Driver;
 public class ConnectionFactory {
 	
 	private static Properties dbProperties;
+	
 	private static String url;
+	
 	private static Driver dbDriver;
 	
 	static{
@@ -27,6 +29,7 @@ public class ConnectionFactory {
 		}
 		
 	}
+	
 	public static Connection getConnection() throws Exception{
         return dbDriver.connect(url,dbProperties);
 	}
@@ -58,5 +61,6 @@ public class ConnectionFactory {
                 st.close();
         if(rs!=null)
                 rs.close();
-}
+	}
+
 }

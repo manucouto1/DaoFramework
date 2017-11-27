@@ -10,13 +10,24 @@ import new_tech_test.test.entities.Novela;
 import new_tech_test.test.repositories.AutorDao;
 import new_tech_test.test.repositories.ComicDao;
 import new_tech_test.test.repositories.NovelaDao;
+import new_tech_test.test.stream.TestConcurrency;
 
 
 public class App 
 {
     public static void main( String[] args )
     {
-        Comic comic3 = new Comic(4,"Comic3",53,1);
+    	
+    	testDev();
+//    	testStream();
+    }
+    
+    public static void testStream(){
+    	TestConcurrency conc = new TestConcurrency();
+    }
+    
+    public static void testDev() {
+    	Comic comic3 = new Comic(4,"Comic3",53,1);
         Novela nov = new Novela(5,"Novela",53,1);
         Autor autor = new Autor(1,"Autor1");
         Novela nov2 = new Novela(7,"NewNov",5342,1);
@@ -68,6 +79,9 @@ public class App
 			System.out.println(novDao.findByTitlePages("Comic",50));
 			
 			System.out.println("\nTESTING FINDONE:");
+			System.out.println(novDao.findOne(nov)+"\n\n");
+			
+			System.out.println("\nTESTING FINDONE CACHE:");
 			System.out.println(novDao.findOne(nov)+"\n\n");
 
 			System.out.println("\nTESTING FINDALL:");

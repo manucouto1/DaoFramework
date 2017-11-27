@@ -4,6 +4,7 @@ public class Comic extends Libro{
 	
 	public Comic () {}
 	public Comic (Integer id, String titulo, Integer paginas, Integer autor) {
+		
 		setId(id);
 		setTitulo(titulo);
 		setPaginas(paginas);

@@ -14,8 +14,11 @@ import org.jdom.input.SAXBuilder;
 public class DomReader {
 	
 	private File xmlFile;
+	
 	private Map<String,String> querys = new HashMap<>();
+	
 	private Map<String,String[]> args = new HashMap<>();
+	
 	private Document document;
 	
 	public DomReader(String url) {

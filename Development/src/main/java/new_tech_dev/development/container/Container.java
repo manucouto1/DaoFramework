@@ -3,28 +3,30 @@ package new_tech_dev.development.container;
 import java.util.HashMap;
 import java.util.Map;
 
-import new_tech_dev.development.proxy.Dao;
+import new_tech_dev.development.base_entity.BaseEntity;
+import new_tech_dev.development.proxy.CachedDao;
 
 public class Container {
 	
 	private Map<Class<?>, Object> contenedor = new HashMap<Class<?>, Object>();
-	private Map<Class<?>, Dao<?>> daoContainer = new HashMap<Class<?>, Dao<?>>();
 	
-	public <T> void put (Class <T> param1, Object param2) throws Exception {
+	private Map<Class<?>, CachedDao<?>> daoContainer = new HashMap<Class<?>, CachedDao<?>>();
+	
+	public <T extends BaseEntity> void put (Class <?> param1, Object param2) throws Exception {
 		
 		if(param1.isInstance(param2)){
 			contenedor.put(param1, param2);
 			if(null == daoContainer.get(param1)){
-				daoContainer.put(param1, new Dao<>(param1));
+				daoContainer.put(param1, new CachedDao<T>(param1));
 			}
 		}else{
 			throw new Exception("Tipos erroneos");
 		}
 	}
 	
-	public <T> void put (Class <T> param1) throws Exception {
+	public <T extends BaseEntity> void put (Class <?> param1) throws Exception {
 		if(null == daoContainer.get(param1)){
-			daoContainer.put(param1, new Dao<T>(param1));
+			daoContainer.put(param1, new CachedDao<T>(param1));
 		}else{
 			throw new Exception("Executor ya creado");
 		}
@@ -39,6 +41,5 @@ public class Container {
 	public <T> T getDao (Class <?> param) {
 		return (T) daoContainer.get(param).getDao();
 	}
-	
 	
 }
