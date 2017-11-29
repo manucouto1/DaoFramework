@@ -1,9 +1,12 @@
 package new_tech_test.test;
 
+import java.util.Arrays;
 import java.util.List;
-
+import java.util.Map;
 
 import new_tech_dev.development.container.Container;
+import new_tech_test.test.arbolBinario.BusquedaManager;
+import new_tech_test.test.arbolBinario.Nodo;
 import new_tech_test.test.entities.Autor;
 import new_tech_test.test.entities.Comic;
 import new_tech_test.test.entities.Novela;
@@ -11,17 +14,36 @@ import new_tech_test.test.repositories.AutorDao;
 import new_tech_test.test.repositories.ComicDao;
 import new_tech_test.test.repositories.NovelaDao;
 import new_tech_test.test.stream.TestConcurrency;
+import new_tech_test.test.torneo.TorneoManager;
 
 
 public class App 
 {
     public static void main( String[] args )
     {
-    	
-    	testDev();
+    	testArbolBB();
+//    	testDev();
 //    	testStream();
     }
     
+    public static void testArbolBB(){
+    	List test = Arrays.asList("1","2","3","4");
+    	TorneoManager torneo = new TorneoManager();
+    	
+    	torneo.setJugadores(test);
+    	torneo.generarTorneo();
+//    	torneo.listarNodos();
+    	
+    	Map<Integer,List<Nodo>> tabla = torneo.getTabla();
+    	
+    	for(Map.Entry<Integer, List<Nodo>> entry : tabla.entrySet()){
+    		System.out.println(" Ronda > "+entry.getKey());
+    		for(Nodo nodo : entry.getValue()){
+    			System.out.print(" "+nodo);
+    		}
+    		System.out.println(" ");
+    	}
+    }
     public static void testStream(){
     	TestConcurrency conc = new TestConcurrency();
     }
@@ -38,6 +60,7 @@ public class App
 			container.put(NovelaDao.class);
 			container.put(AutorDao.class);
 			container.put(ComicDao.class);
+			
 			NovelaDao novDao = container.getDao(NovelaDao.class); 
 			AutorDao autDao = container.getDao(AutorDao.class);
 			ComicDao comicDao = container.getDao(ComicDao.class);
