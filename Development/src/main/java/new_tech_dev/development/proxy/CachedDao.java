@@ -6,7 +6,7 @@ import java.lang.reflect.Type;
 
 import new_tech_dev.development.base_cache.CacheManager;
 import new_tech_dev.development.base_entity.BaseEntity;
-import new_tech_dev.development.executor.Executor;
+import new_tech_dev.development.executor.DaoExecutor;
 
 public class CachedDao<T> {
 	
@@ -26,7 +26,7 @@ public class CachedDao<T> {
 						Type[] types = method.getParameterTypes();
 						Type[] typos = null ;
 						Class<T> paraZed = null;
-						Executor<T> ex = null;
+						DaoExecutor<T> ex = null;
 						
 						
 						for (Type genericInterface : genericInterfaces) {
@@ -36,7 +36,7 @@ public class CachedDao<T> {
 						        paraZed = (Class<T>) Class.forName(genericTypes[0].getTypeName());
 						        
 						        // TODO Usar una cache en vez del ejecutor y guardar el ejecutor en la cache
-						        ex = new Executor<>(paraZed);
+						        ex = new DaoExecutor<>(paraZed);
 						    }
 						}
 						// Decide the method to execute the action

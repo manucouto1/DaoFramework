@@ -17,7 +17,7 @@ import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 
 import new_tech_dev.development.dbacces.ConnectionFactory;
-import new_tech_dev.development.executor.Executor;
+import new_tech_dev.development.executor.DaoExecutor;
 
 
 public abstract class GenericCacheObject<K,V>{
@@ -26,11 +26,11 @@ public abstract class GenericCacheObject<K,V>{
 		private static final Logger LOGGER = LoggerFactory.getLogger(GenericCacheObject.class);
 		private ConnectionFactory conexion;
 		private Map<Integer,Boolean> isPersist;
-		private Executor exec;
+		private DaoExecutor exec;
 		
 		
 		public GenericCacheObject(Class<?> clazz) {
-			exec = new Executor(clazz);
+			exec = new DaoExecutor(clazz);
 		}
 		
 		private LoadingCache<K, V> makeCache() {

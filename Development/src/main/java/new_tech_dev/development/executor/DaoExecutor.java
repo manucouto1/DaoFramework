@@ -15,7 +15,7 @@ import new_tech_dev.development.base_entity.BaseEntity;
 import new_tech_dev.development.dbacces.ConnectionFactory;
 import new_tech_dev.development.domacces.DomReader;
 
-public class Executor <T>{
+public class DaoExecutor <T>{
 	
 	private DomReader dReader;
 	
@@ -31,7 +31,7 @@ public class Executor <T>{
 	
 	private Class<?>[] types;
 	
-	public Executor(Class<?> clazz) {
+	public DaoExecutor(Class<?> clazz) {
 		
 			this.conexion = new ConnectionFactory();
 			this.dReader = new DomReader(clazz.getSimpleName());

@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import new_tech_dev.development.executor.Executor;
+import new_tech_dev.development.executor.DaoExecutor;
 
 public class Dao<T> {
 	
@@ -23,7 +23,7 @@ public class Dao<T> {
 						Type[] types = method.getParameterTypes();
 						Type[] typos = null ;
 						Class<T> paraZed = null;
-						Executor<T> ex = null;
+						DaoExecutor<T> ex = null;
 						
 						for (Type genericInterface : genericInterfaces) {
 						    if (genericInterface instanceof ParameterizedType) {
@@ -32,7 +32,7 @@ public class Dao<T> {
 						        paraZed = (Class<T>) Class.forName(genericTypes[0].getTypeName());
 						        
 						        // TODO Usar una cache en vez del ejecutor y guardar el ejecutor en la cache
-						        ex = new Executor<>(paraZed);
+						        ex = new DaoExecutor<>(paraZed);
 						    }
 						}
 						
