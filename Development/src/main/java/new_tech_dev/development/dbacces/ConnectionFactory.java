@@ -20,7 +20,7 @@ public class ConnectionFactory {
 		System.out.println(" Estableciendo conexion ... ");
 		try{
 			dbProperties = new Properties();
-			dbProperties.load(new FileInputStream("src/main/resources/jdbc.properties"));
+			dbProperties.load(new FileInputStream("resources/jdbc.properties"));
 			dbDriver = (Driver)Class.forName(dbProperties.getProperty("DriverClassName")).newInstance();
 			url = dbProperties.getProperty("url");
 			System.out.println(" Conexion establecida.");

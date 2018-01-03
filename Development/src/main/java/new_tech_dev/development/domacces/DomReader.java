@@ -28,7 +28,7 @@ public class DomReader {
 		SAXBuilder builder = new SAXBuilder();
 		
 		try {
-			document = (Document) builder.build("src/main/resources/"+xmlFile+".xml");
+			document = (Document) builder.build("resources/"+xmlFile+".xml");
 		} catch (JDOMException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

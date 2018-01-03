@@ -22,7 +22,7 @@ public class Container {
 		if(param1.isInstance(param2)){
 			contenedor.put(param1, param2);
 			if(null == daoContainer.get(param1)){
-				LOG.info(" -- PUTTING DAO in container: key > "+param1.getSimpleName()+" | value : Dao<"+param2+">");
+				LOG.info(" PUTTING DAO in container: key > "+param1.getSimpleName()+" | value : Dao<"+param2+">");
 				daoContainer.put(param1, new CachedDao<T>(param1));
 			}else{
 				throw new Exception(" - ERROR: La clave ya existe");
@@ -34,7 +34,7 @@ public class Container {
 	
 	public <T extends BaseEntity> void put (Class <?> param1) throws Exception {
 		if(null == daoContainer.get(param1)){
-			LOG.info(" -- PUTTING DAO in container: key > "+param1.getSimpleName());
+			LOG.info(" PUTTING DAO in container: key > "+param1.getSimpleName());
 			daoContainer.put(param1, new CachedDao<T>(param1));
 		}else{
 			throw new Exception(" - ERROR: La clave ya existe");
@@ -48,6 +48,7 @@ public class Container {
 	
 	@SuppressWarnings("unchecked")
 	public <T> T getDao (Class <?> param) {
+		LOG.info(" GETTING DAO from container: key > "+param.getSimpleName());
 		return (T) daoContainer.get(param).getDao();
 	}
 	

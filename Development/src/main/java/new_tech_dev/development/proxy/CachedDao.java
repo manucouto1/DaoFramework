@@ -4,11 +4,16 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import new_tech_dev.development.base_cache.CacheManager;
 import new_tech_dev.development.base_entity.BaseEntity;
 import new_tech_dev.development.executor.DaoExecutor;
 
 public class CachedDao<T> {
+	
+	private static Logger LOG = LoggerFactory.getLogger(CachedDao.class);
 	
 	private T returned;
 	
@@ -40,7 +45,15 @@ public class CachedDao<T> {
 						    }
 						}
 						// Decide the method to execute the action
-						System.out.println(" Method name >> "+method_name+" , parameterS > "+method.getGenericParameterTypes().length);
+						LOG.info(" PROXY Method name >> "+method_name+" , parameters > "+method.getGenericParameterTypes().length);
+						// Logg Typos
+						String auxString = "[";
+						for(Type tipo : typos){
+							auxString+=tipo.getTypeName()+", ";
+						}
+						auxString += "]";
+						LOG.info(" PROXY Method TYPOS >> "+auxString);
+						//
 						if(method.getGenericParameterTypes().length > 0){
 							
 							if((method.getGenericParameterTypes().length==1)){
