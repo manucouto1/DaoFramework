@@ -5,10 +5,15 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mysql.cj.api.jdbc.Statement;
 import com.mysql.cj.jdbc.Driver;
 
 public class ConnectionFactory {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(ConnectionFactory.class);
 	
 	private static Properties dbProperties;
 	
@@ -17,13 +22,13 @@ public class ConnectionFactory {
 	private static Driver dbDriver;
 	
 	static{
-		System.out.println(" Estableciendo conexion ... ");
+		LOG.info(" CONNECTING: Estableciendo conexion ... ");
 		try{
 			dbProperties = new Properties();
 			dbProperties.load(new FileInputStream("resources/jdbc.properties"));
 			dbDriver = (Driver)Class.forName(dbProperties.getProperty("DriverClassName")).newInstance();
 			url = dbProperties.getProperty("url");
-			System.out.println(" Conexion establecida.");
+			LOG.info(" CONNECTING: Conexion establecida.");
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -35,15 +40,16 @@ public class ConnectionFactory {
 	}
 	
 	public ResultSet execute(String query) throws Exception{
-		System.out.println(" Ejecutando Query: "+query);
+		LOG.info(" PROCESSING:  Ejecutando Query: \n "+query);
 		Connection con = getConnection();
 		Statement stmt = (Statement) con.createStatement();
 		ResultSet rs = null;
 		try{
-			rs = stmt.executeQuery(query);
+			stmt.executeUpdate(query,java.sql.Statement.RETURN_GENERATED_KEYS);
+			if((rs==null) || (!rs.next())) rs = stmt.getGeneratedKeys();
 		}catch(Exception e){
 			try{
-				stmt.executeUpdate(query);
+				rs = stmt.executeQuery(query);
 			}catch(Exception ex) {
 				e.printStackTrace();
 				ex.printStackTrace();

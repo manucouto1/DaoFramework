@@ -54,14 +54,32 @@ public class DaoExecutor <T>{
 	
 	// Execute Action
 	public Object executeOne(String action, Type[] types, Object[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException, IllegalArgumentException, InvocationTargetException{
-		
+			String logString = "";
 			ResultSet rs = executeQuery(getProcessedQuery(args,types,action));
-			
-			if(null != rs){
-				if(rs.next()){
-					return  processSingleResult(rs);
-				} 
+			logString+=" PROCESSING: action > "+action+", args > ";
+			logString+="[";
+			for(Object a : args ){
+				logString+= a+", ";
 			}
+			logString +="]";
+			logString +=", cast > "+this.generic;
+			LOG.info(logString);
+			if(action.equalsIgnoreCase("add")){
+				if(null != rs){
+					if(rs.next()){
+						LOG.info(" PROCESSION: "+action+" : "+rs.getString(1));
+						return rs.getString(1);
+					} 
+				}
+			}else{
+				if(null != rs){
+					if(rs.next()){
+						
+						return  processSingleResult(rs);
+					} 
+				}
+			}
+			
 			return null;
 	}
 	
@@ -75,16 +93,17 @@ public class DaoExecutor <T>{
 			return processMultyResult(executeQuery(querys.get(action)));
 	}
 	
-	public Object executeOneNoParams(String action) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SQLException{
+	public Object executeOneNoParams(String action, Type tipo) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SQLException{
 		
 			ResultSet rs = executeQuery(querys.get(action));
 			
 			if(null != rs){
 				if(rs.next()){
-					return  processSingleResult(rs);
+					if(tipo.getTypeName().equalsIgnoreCase("int")||tipo.getTypeName().equalsIgnoreCase("Integer"))
+					return  rs.getInt(1);
 				} 
 			}
-			return null;
+			return rs;
 		
 	}
 	
@@ -125,6 +144,7 @@ public class DaoExecutor <T>{
 				objeto = constructor.newInstance(resultSet.toArray());
 				generic.cast(objeto);
 			}
+			LOG.info(" OUTPUT Processor : Object > "+objeto);
 			return  objeto;
 	}
 	

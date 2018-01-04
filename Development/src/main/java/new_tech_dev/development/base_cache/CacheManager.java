@@ -7,9 +7,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import new_tech_dev.development.base_entity.BaseEntity;
 
 public class CacheManager <V extends BaseEntity>{
+	
+	private static final Logger LOG = LoggerFactory.getLogger(CacheManager.class);
 	
 	private Map<Integer,V> cacheHashMap = new HashMap<>();
 	
@@ -22,7 +27,7 @@ public class CacheManager <V extends BaseEntity>{
 					public void run(){
 						try{
 							while(true){
-								 System.out.println(" ThreadCleanerUpper Scanning For"
+								 LOG.info(" SCANNING : ThreadCleanerUpper Scanning For"
 										 +"Expired Objects...");
 								 Set<?> KeySet = cacheHashMap.keySet();
 								 Iterator<?> keys = KeySet.iterator();
@@ -31,7 +36,7 @@ public class CacheManager <V extends BaseEntity>{
 									 V value =  cacheHashMap.get(key);
 									 if (value.isExpired()){
 										 cacheHashMap.remove(key);
-										 System.out.println(" ThreadCleanerUpper Running."
+										 LOG.info(" REMOVING : ThreadCleanerUpper Running."
 										 		+ "Found an Expired Object in the Cache");
 									 }
 								 }
@@ -46,17 +51,23 @@ public class CacheManager <V extends BaseEntity>{
 				threadCleanerUpper.setPriority(Thread.MIN_PRIORITY);
 				threadCleanerUpper.start();
 		} catch (Exception e) {
-			System.out.println("CacheManager.Static Block: " + e);
+			LOG.error(" CACHING : CacheManager.Static Block: " + e);
 		}
 	}
 	
 	public V putCache(V object){
-		System.out.println(" Putting cache id > "+object);
-		return cacheHashMap.put(object.getId(), object);
+		LOG.info(" CACHING : Putting cache id > "+object);
+		cacheHashMap.put(object.getId(), object);
+		if(cacheHashMap.get(object.getId())!= null){
+			LOG.info(" CACHING : confirmed ");
+			return object;
+		}
+		LOG.info(" CACHING : error ");
+		return null;
 	}
 	
 	public List<V> putCache(List<V> objects){
-		System.out.println(" Putting  cache > "+objects);
+		LOG.info(" CACHING : Putting  cache > "+objects);
 		for( V object : objects) {
 			cacheHashMap.put(object.getId(), object);
 		}
@@ -84,15 +95,15 @@ public class CacheManager <V extends BaseEntity>{
 		V object = null;
 		
 		if(identifier instanceof Integer){
-			System.out.println(" Usando Cache para id >"+identifier);
+			LOG.info(" FOUND : Usando Cache para id >"+identifier);
 			object = cacheHashMap.get(identifier);
 		}
 		if(identifier instanceof BaseEntity){
-			System.out.println(" Usando Cache para id > "+((BaseEntity) identifier).getId());
+			LOG.info(" FOUND : Usando Cache para id > "+((BaseEntity) identifier).getId());
 			object = cacheHashMap.get(((BaseEntity) identifier).getId());
 		}
 		
-		System.out.println(" Cache found > "+ object);
+		LOG.info(" GET : Cache found > "+ object);
 		if (object == null){
 			return null;
 		}

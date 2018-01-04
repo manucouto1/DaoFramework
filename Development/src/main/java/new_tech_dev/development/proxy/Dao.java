@@ -56,7 +56,7 @@ public class Dao<T> {
 							if(method.getReturnType().getSimpleName().contains("List")){
 								return ex.executeNoParams(method_name);
 							}
-							return ex.executeOneNoParams(method_name);
+							return ex.executeOneNoParams(method_name, method.getReturnType());
 						}
 					}
 	            });

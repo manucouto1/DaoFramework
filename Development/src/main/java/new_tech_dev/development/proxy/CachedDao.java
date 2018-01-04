@@ -45,14 +45,14 @@ public class CachedDao<T> {
 						    }
 						}
 						// Decide the method to execute the action
-						LOG.info(" PROXY Method name >> "+method_name+" , parameters > "+method.getGenericParameterTypes().length);
+						LOG.info(" PROXY : Method name > "+method_name+" , parameters > "+method.getGenericParameterTypes().length);
 						// Logg Typos
 						String auxString = "[";
 						for(Type tipo : typos){
 							auxString+=tipo.getTypeName()+", ";
 						}
 						auxString += "]";
-						LOG.info(" PROXY Method TYPOS >> "+auxString);
+						LOG.info(" PROXY : Method Typos > "+auxString);
 						//
 						if(method.getGenericParameterTypes().length > 0){
 							
@@ -68,7 +68,7 @@ public class CachedDao<T> {
 									return (null != ex.executeOne(method_name, typos, args) && 0 < (Integer) ex.executeOne(method_name, typos, args))? cache.update((BaseEntity) args[0]) : false;
 								}
 								if(method_name.equalsIgnoreCase("add")){
-									return (null != ex.executeOne(method_name, typos, args) && 0 < (Integer) ex.executeOne(method_name, typos, args))? cache.putCache((BaseEntity) args[0]): false;
+									return (null != ex.executeOne(method_name, typos, args))? cache.putCache((BaseEntity) args[0]): false;
 								}
 								
 							} 
@@ -78,15 +78,13 @@ public class CachedDao<T> {
 									return ex.executeOne(method_name, types, args);
 							
 							
-						} else if(method_name.equalsIgnoreCase("findAll"))
-							{
-								return (0==cache.getAll().size())?cache.putCache(ex.executeNoParams(method_name)): cache.getAll();
-							} else if(method.getReturnType().getSimpleName().contains("List"))
-							{
-								return ex.executeNoParams(method_name);
-							}
-							return ex.executeOneNoParams(method_name);
-						}
+						} else if(method_name.equalsIgnoreCase("findAll")) {
+									return (0==cache.getAll().size())?cache.putCache(ex.executeNoParams(method_name)): cache.getAll();
+								} else if(method.getReturnType().getSimpleName().contains("List")) {
+											return ex.executeNoParams(method_name);
+										}
+								return ex.executeOneNoParams(method_name, method.getReturnType());
+						} 
 	            });
 	}
 	

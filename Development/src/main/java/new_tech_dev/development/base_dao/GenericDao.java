@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface GenericDao <T>{
 	
-	public void add(T e);
+	public Object add(T e);
 	
 	public T findOne(T e);
 	
