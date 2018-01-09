@@ -47,12 +47,18 @@ public class ConnectionFactory {
 		try{
 			stmt.executeUpdate(query,java.sql.Statement.RETURN_GENERATED_KEYS);
 			if((rs==null) || (!rs.next())) rs = stmt.getGeneratedKeys();
+		
 		}catch(Exception e){
 			try{
 				rs = stmt.executeQuery(query);
 			}catch(Exception ex) {
-				e.printStackTrace();
-				ex.printStackTrace();
+				try{
+					stmt.execute(query);
+				}catch(Exception exc){
+					exc.printStackTrace();
+					ex.printStackTrace();
+					e.printStackTrace();
+				}
 			}
 		}
 		return rs;
