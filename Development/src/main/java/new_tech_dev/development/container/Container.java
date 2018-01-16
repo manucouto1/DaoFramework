@@ -17,7 +17,7 @@ public class Container {
 	
 	private Map<Class<?>, CachedDao<?>> daoContainer = new HashMap<Class<?>, CachedDao<?>>();
 	
-	public <T extends BaseEntity> void put (Class <?> param1, Object param2) throws Exception {
+	public <T extends BaseEntity> void put (Class <?> param1, T param2) throws Exception {
 		
 		if(param1.isInstance(param2)){
 			contenedor.put(param1, param2);

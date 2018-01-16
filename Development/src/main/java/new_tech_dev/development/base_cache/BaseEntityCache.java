@@ -12,13 +12,13 @@ import org.slf4j.LoggerFactory;
 
 import new_tech_dev.development.base_entity.BaseEntity;
 
-public class CacheManager <V extends BaseEntity>{
+public class BaseEntityCache <V extends BaseEntity>{
 	
-	private static final Logger LOG = LoggerFactory.getLogger(CacheManager.class);
+	private static final Logger LOG = LoggerFactory.getLogger(BaseEntityCache.class);
 	
 	private Map<Integer,V> cacheHashMap = new HashMap<>();
 	
-	public CacheManager(){
+	public BaseEntityCache(){
 		try {
 			Thread threadCleanerUpper = new Thread(
 				new Runnable(){
@@ -115,19 +115,4 @@ public class CacheManager <V extends BaseEntity>{
 		}
 		
 	}
-//	public V getCache( V identifier) {
-//		System.out.println(" Usando Cache para id > "+identifier.getId());
-//		V object = cacheHashMap.get(identifier.getId());
-//		System.out.println(" Cache found > "+ object);
-//		if (object == null){
-//			return null;
-//		}
-//		if (object.isExpired()){
-//			cacheHashMap.remove(identifier);
-//			return null;
-//		} else {
-//			return object;
-//		}
-//		
-//	}
 }

@@ -47,7 +47,6 @@ public class ConnectionFactory {
 		try{
 			stmt.executeUpdate(query,java.sql.Statement.RETURN_GENERATED_KEYS);
 			if((rs==null) || (!rs.next())) rs = stmt.getGeneratedKeys();
-		
 		}catch(Exception e){
 			try{
 				rs = stmt.executeQuery(query);
