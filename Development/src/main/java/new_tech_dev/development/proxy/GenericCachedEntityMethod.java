@@ -51,8 +51,10 @@ public class GenericCachedEntityMethod <T> implements InvocationHandler{
 		LOG.info(" PROXY : Method name > "+method_name+" , parameters > "+method.getGenericParameterTypes().length);
 		// Logg Typos
 		String auxString = "[";
-		for(Type tipo : typos){
-			auxString+=tipo.getTypeName()+", ";
+		if(typos != null){
+			for(Type tipo : typos){
+				auxString+=tipo.getTypeName()+", ";
+			}
 		}
 		auxString += "]";
 		LOG.info(" PROXY : Method Typos > "+auxString);
@@ -76,20 +78,17 @@ public class GenericCachedEntityMethod <T> implements InvocationHandler{
 				
 			} 
 			if(method.getReturnType().getSimpleName().contains("List")){
-					return ex.execute(method_name, parameterTypes, args);
-					}
-					return ex.executeOne(method_name, parameterTypes, args);
-			
+				return ex.execute(method_name, parameterTypes, args);
+			}
+			return ex.executeOne(method_name, parameterTypes, args);
 			
 		} else if(method_name.equalsIgnoreCase("findAll")) {
-					
-				return ex.executeNoParams(method_name);
+			return ex.executeNoParams(method_name);
 				// TODO guardar en cache las entidades del findAll
-//				return (0==cache.getAll().size())?cache.putCache(ex.executeNoParams(method_name)): cache.getAll();
-				} else if(method.getReturnType().getSimpleName().contains("List")) {
-							return ex.executeNoParams(method_name);
-						}
-				return ex.executeOneNoParams(method_name, method.getReturnType());
-		} 
+		} else if(method.getReturnType().getSimpleName().contains("List")) {
+			return ex.executeNoParams(method_name);
+		}
+	return ex.executeOneNoParams(method_name, method.getReturnType());
+	} 
 
 }

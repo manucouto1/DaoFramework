@@ -1,4 +1,4 @@
-package new_tech_dev.development.dbacces;
+package new_tech_dev.development.db_acces;
 
 import java.io.FileInputStream;
 import java.sql.Connection;

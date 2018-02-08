@@ -1,4 +1,4 @@
-package new_tech_dev.development.domacces;
+package new_tech_dev.development.dom_acces;
 
 import java.io.File;
 import java.io.IOException;

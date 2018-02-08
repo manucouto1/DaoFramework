@@ -15,11 +15,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import new_tech_dev.development.base_entity.BaseEntity;
-import new_tech_dev.development.dbacces.ConnectionFactory;
-import new_tech_dev.development.domacces.DomReader;
+import new_tech_dev.development.db_acces.ConnectionFactory;
+import new_tech_dev.development.dom_acces.DomReader;
 
 public class DaoExecutor <T>{
-	
+	// TODO Separar responsabilidades 
+	/*
+	 *  1- Parse Query
+	 *  2- Procesar ResultSet
+	 *  
+	 */
 	private static final Logger LOG = LoggerFactory.getLogger(DaoExecutor.class);
 	
 	private DomReader dReader;
@@ -173,7 +178,7 @@ public class DaoExecutor <T>{
 					String[] elements = trozos[i].split("\\.");
 					trozos[i] = elements[1];
 				}
-				System.out.println(" @@## i-1 >> "+(i-1));
+//				System.out.println(" @@## i-1 >> "+(i-1));
 				try {
 					clase = Class.forName(types[i - 1].getTypeName());
 				} catch (ClassNotFoundException e) {

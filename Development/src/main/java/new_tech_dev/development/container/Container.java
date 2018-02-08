@@ -42,12 +42,12 @@ public class Container {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <T> T getInstance (Class <?> param) {
+	public <T> T getInstance (Class <T> param) {
 		return (T) contenedor.get(param);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <T> T getDao (Class <?> param) {
+	public <T> T getDao (Class <T> param) {
 		LOG.info(" GETTING DAO : container key > "+param.getSimpleName());
 		return (T) daoContainer.get(param).getDao();
 	}
