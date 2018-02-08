@@ -25,7 +25,7 @@ public class ConnectionFactory {
 		LOG.info(" CONNECTING: Estableciendo conexion ... ");
 		try{
 			dbProperties = new Properties();
-			dbProperties.load(new FileInputStream("resources/jdbc.properties"));
+			dbProperties.load(new FileInputStream("src/main/resources/jdbc.properties"));
 			dbDriver = (Driver)Class.forName(dbProperties.getProperty("DriverClassName")).newInstance();
 			url = dbProperties.getProperty("url");
 			LOG.info(" CONNECTING: Conexion establecida.");

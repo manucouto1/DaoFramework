@@ -27,6 +27,12 @@ public class GenericCachedEntityMethod <T> implements InvocationHandler{
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		
 		String method_name = method.getName();
+		
+		
+		
+		
+//		return DaoExecutor.exec(QueryExecutor.exec(DomProccesor(method, args, clazz)));
+//		
 		Type[] genericInterfaces = clazz.getGenericInterfaces();
 		Type[] parameterTypes = method.getParameterTypes();
 		Type[] typos = null ;
@@ -46,7 +52,13 @@ public class GenericCachedEntityMethod <T> implements InvocationHandler{
 		 * TODO Asumir que la entidad extiende de BaseEntity.
 		 * 		Refactorizar el executor para que traje con BaseEntity y aplicar patrones para separar los casos. 
 		 */
-		
+		System.out.println(" @@## Class "+clazz.getSimpleName());
+		for(Type tipo : parameterTypes){
+			System.out.println(" @@## parameter Types "+tipo.getTypeName());
+		}
+		for(Type tipo : typos){
+			System.out.println(" @@## generoc parameter Types "+tipo.getTypeName());
+		}
 		// Decide the method to execute the action
 		LOG.info(" PROXY : Method name > "+method_name+" , parameters > "+method.getGenericParameterTypes().length);
 		// Logg Typos

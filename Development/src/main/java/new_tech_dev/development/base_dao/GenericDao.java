@@ -2,18 +2,18 @@ package new_tech_dev.development.base_dao;
 
 import java.util.List;
 
-public interface GenericDao <T> {
+public interface GenericDao <K,V> {
 	
-	public T findOne(T e);
+	public V findOne(K e);
 	
-	public Object add(T e);
+	public K add(V e);
 	
-	public List<T> findAll();
+	public List<V> findAll();
 	
-	public void delete(T e);
+	public void delete(V v);
 	
-	public void update(T e);
+	public void update(V e);
 	
-	public Class<T> getType();
+	public Class<V> getType();
 	
 }
