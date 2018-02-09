@@ -61,7 +61,7 @@ public class DomReader {
 		return querys;
 	}
 	
-	public Map<String,String[]> getArgs(){
+	public Map<String,String[]> getParams(){
 		return args;
 	}
 	

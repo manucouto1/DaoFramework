@@ -47,7 +47,7 @@ public class DaoExecutor <T>{
 			this.conexion = new ConnectionFactory();
 			this.dReader = new DomReader(clazz.getSimpleName());
 			this.querys = dReader.getQuerys();
-			this.argsName = dReader.getArgs();
+			this.argsName = dReader.getParams();
 			this.generic = clazz;
 			
 			try {

@@ -2,18 +2,17 @@ package new_tech_dev.development.executor_thing;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 
 import new_tech_dev.development.dom_acces.DomReader;
+import new_tech_dev.development.method_ting.MethodInfo;
 import new_tech_dev.development.query_processors_thing.QueryProcessor;
 
 public class DaoManager {
 	
-	private Map<String, String> querys = new HashMap<>();
-	private Map<String, String[]> argNames = new HashMap<>();
-	private Map<String, Method> methods = new HashMap<>();
+	private Map<String, MethodInfo> methods = new HashMap<>();
 	private Class<?> classV;
 	private Class<?> classK;
 	
@@ -21,7 +20,7 @@ public class DaoManager {
 	public DaoManager(Class<?> clazz) {
 		
 		try {
-			testDaoXmlIntegrity(clazz);
+			checkDaoXmlIntegrity(clazz);
 			this.classV = (Class<?>) ((ParameterizedType)clazz.getGenericSuperclass()).getActualTypeArguments()[0];
 			this.classK = (Class<?>) ((ParameterizedType)clazz.getGenericSuperclass()).getActualTypeArguments()[1];
 			
@@ -32,51 +31,41 @@ public class DaoManager {
 	}
 	
 	/*
-	 * TODO debe saber que tipo de executor
+	 * Execute recupera el MethodInfo y lo pasa a un procesador que crea la Query final
 	 */
-	public Object execute(Method method, Object[] args) {
-		
-//		String finalQuery = QueryProcessor.proccess();
-		
+	public Object execute(Method method, Object[] args, Connection conect) {
+		MethodInfo methodInfo = methods.get(method.getName());
+		String query = QueryProcessor.process(methodInfo,methodInfo.ArgKeyValueGenerator(args));
+		ResultSet rs = 
 		return null;
-	}
-	/*
-	 * Compara los metodos de la interfazDao con los del XMLDao
-	 * Comprar los argumentos de cada metodo para que tengan el mismo nombre
-	 * Si todo esta bien inicializa los atributos que usaran los executors
-	 * 
-	 */
-	private void testDaoXmlIntegrity(Class<?> clazz) throws Exception{
-		try{
-			DomReader dReader = new DomReader(clazz.getSimpleName());
-			this.argNames = dReader.getArgs();
-			this.querys = dReader.getQuerys();
-			Method[] methodsList = clazz.getDeclaredMethods();
-			for(int i=0; i<methodsList.length; i++){
-				if(querys.get(methodsList[i].getName())!=null){
-					if(argNames.get(methodsList[i].getName()).equals(getStringParameterNames(methodsList[i].getParameterTypes()))){
-						methods.put(methodsList[i].getName(), methodsList[i]);
-					} else {
-						throw new Exception(" TODO Exception Message");
-					}
-				} else {
-					throw new Exception(" TODO Exception Message");
-				}
-			} 
-		} catch (Exception e){
-			e.printStackTrace();
-		}
 	}
 	
 	/*
-	 * Pasa el array Type[] al array String[] con los nombres de los tipos
+	 * Recupera las consultas y los argumentos que se les pasan
+	 * Se crean los objetos MethodInfo
 	 */
-	private String[] getStringParameterNames(Type[] parameterTypes) {
-		String[] result = new String[parameterTypes.length];
-		for(int i=0; i<parameterTypes.length; i++){
-			result[i] = parameterTypes[i].getTypeName();
+	private void checkDaoXmlIntegrity(Class<?> clazz) throws Exception {
+		Map<String, String[]> queryArgsNames;
+		Map<String, String> querys;
+		DomReader dReader;
+
+		try {
+
+			dReader = new DomReader(clazz.getSimpleName());
+			queryArgsNames = dReader.getParams();
+			querys = dReader.getQuerys();
+			Method[] methodsList = clazz.getDeclaredMethods();
+			for (int i = 0; i < methodsList.length; i++) {
+				this.methods.put(methodsList[i].getName(), new MethodInfo(methodsList[i],
+						querys.get(methodsList[i].getName()), queryArgsNames.get(methodsList[i].getName())));
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		return result;
+		
 	}
+	
+
 	
 }
