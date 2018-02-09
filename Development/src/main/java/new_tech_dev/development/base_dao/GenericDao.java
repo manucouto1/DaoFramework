@@ -2,7 +2,8 @@ package new_tech_dev.development.base_dao;
 
 import java.util.List;
 
-public interface GenericDao <K,V> {
+public interface GenericDao<V,K>{
+	
 	
 	public V findOne(K e);
 	

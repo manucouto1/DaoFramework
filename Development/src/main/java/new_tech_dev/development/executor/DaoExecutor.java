@@ -35,6 +35,7 @@ public class DaoExecutor <T>{
 	
 	private Map<String,String[]> argsName = new HashMap<String,String[]>();
 	
+	//generic no se corresponde con la clase del tipo que devuelve cada metodo
 	private Class<?> generic;
 	
 	private Constructor<?>  constructor;

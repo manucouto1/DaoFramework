@@ -4,7 +4,6 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,15 +11,18 @@ import org.slf4j.LoggerFactory;
 import new_tech_dev.development.base_cache.BaseEntityCache;
 import new_tech_dev.development.base_entity.BaseEntity;
 import new_tech_dev.development.executor.DaoExecutor;
+import new_tech_dev.development.executor_thing.DaoManager;
 
 public class GenericCachedEntityMethod <T> implements InvocationHandler{
 //	<T extends BaseEntity> problema en Cache 
 	private Logger LOG = LoggerFactory.getLogger(GenericCachedEntityMethod.class);
 	private BaseEntityCache<BaseEntity> cache = new BaseEntityCache<>();
 	private Class<?> clazz;
+	private DaoManager man;
 	
 	public GenericCachedEntityMethod (Class<?> clazz){
 		this.clazz = clazz;
+		this.man = new DaoManager(clazz);
 	}
 	
 	@Override
@@ -33,6 +35,7 @@ public class GenericCachedEntityMethod <T> implements InvocationHandler{
 		
 //		return DaoExecutor.exec(QueryExecutor.exec(DomProccesor(method, args, clazz)));
 //		
+		
 		Type[] genericInterfaces = clazz.getGenericInterfaces();
 		Type[] parameterTypes = method.getParameterTypes();
 		Type[] typos = null ;

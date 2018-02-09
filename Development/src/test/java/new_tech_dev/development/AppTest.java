@@ -1,38 +1,13 @@
 package new_tech_dev.development;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.junit.Test;
 
-/**
- * Unit test for simple App.
- */
-public class AppTest 
-    extends TestCase
-{
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
-    public AppTest( String testName )
-    {
-        super( testName );
-    }
+import new_tech_dev.development.query_processors_thing.QueryProcessor;
 
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite()
-    {
-        return new TestSuite( AppTest.class );
-    }
-
-    /**
-     * Rigourous Test :-)
-     */
-    public void testApp()
-    {
-        assertTrue( true );
+public class AppTest{
+	
+    @Test
+    public void testQueryProccesor() {
+    	QueryProcessor.proccess("select * from tabla where id_uno = [esto] and id_dos = [esto.otro]", null, null, null);
     }
 }
