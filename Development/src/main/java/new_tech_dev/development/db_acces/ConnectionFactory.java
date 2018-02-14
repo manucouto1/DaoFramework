@@ -39,7 +39,7 @@ public class ConnectionFactory {
         return dbDriver.connect(url,dbProperties);
 	}
 	
-	public ResultSet execute(String query) throws Exception{
+	public static ResultSet execute(String query) throws Exception{
 		LOG.info(" PROCESSING:  Ejecutando Query: \n "+query);
 		Connection con = getConnection();
 		Statement stmt = (Statement) con.createStatement();

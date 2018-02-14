@@ -24,7 +24,7 @@ public class DomReader {
 	public DomReader(String url) {
 		
 		int i = 0;
-		this.xmlFile = new File(url+"Dao");
+		this.xmlFile = new File(url);
 		SAXBuilder builder = new SAXBuilder();
 		
 		try {

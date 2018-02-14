@@ -1,0 +1,7 @@
+<querys>
+	<query name="cleanDb">
+		<script>
+		CALL cleanDB;
+		</script>
+	</query>
+</querys>

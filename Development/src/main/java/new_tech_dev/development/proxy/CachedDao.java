@@ -1,5 +1,7 @@
 package new_tech_dev.development.proxy;
 
+import new_tech_dev.development.the_thing.CachedHandler;
+
 public class CachedDao<T> {
 	
 	private T returned;
@@ -9,7 +11,7 @@ public class CachedDao<T> {
 		returned = (T) java.lang.reflect.Proxy.newProxyInstance(
 	            clazz.getClassLoader(),
 	            new java.lang.Class[] { clazz },
-	            new GenericCachedEntityMethod<T>(clazz));
+	            new CachedHandler(clazz));
 	}
 	
 	public T getDao() {

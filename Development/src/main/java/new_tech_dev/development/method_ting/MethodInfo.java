@@ -6,12 +6,17 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
+import new_tech_dev.development.return_thing.Return;
+import new_tech_dev.development.return_thing.ReturnCaster;
+import new_tech_dev.development.return_thing.ReturnFactory;
+
 public class MethodInfo {
 
 	private final String name;
 	private final String rawQuery;
 	private final String[] qArgsNames;
 	private final Map<String, Type> argNameType = new HashMap<>();
+	private final Class<?> returnType;
 
 	/*
 	 * Se mira que el numero de parámetros de la consulta y del metodo de la
@@ -25,21 +30,32 @@ public class MethodInfo {
 		this.rawQuery = rawQuery;
 		this.name = metodo.getName();
 		this.qArgsNames = qArgsNames;
+		this.returnType = metodo.getReturnType();
 		Parameter[] parameters = metodo.getParameters();
 		Type[] types = metodo.getParameterTypes();
-
-		if (parameters.length == qArgsNames.length) {
-			for (int i = 0; i < parameters.length; i++) {
-				if (!parameters[i].isNamePresent()) {
-					throw new IllegalArgumentException("Parameter names are not present!");
+		if(qArgsNames != null){
+			if (parameters.length == qArgsNames.length) {
+				for (int i = 0; i < parameters.length; i++) {
+					if((Type) parameters[i].getType() == types[i]){
+						this.argNameType.put(parameters[i].getName(), types[i]);
+					} else {
+						throw new IllegalArgumentException(" TODO Exception Message");
+					}
+					
+//					TODO Usar Spring para obtener el nombre de los parametros del metodo
+//					if (!parameters[i].isNamePresent()) {
+//						throw new IllegalArgumentException("Parameter names are not present!");
+//					}
+//					if (parameters[i].getName().equals(qArgsNames[i])) {
+//						this.argNameType.put(parameters[i].getName(), types[i]);
+//					} else {
+//						
+//					}
 				}
-				if (parameters[i].getName().equals(qArgsNames[i])) {
-					this.argNameType.put(parameters[i].getName(), types[i]);
-				} else {
-					throw new Exception(" TODO Exception Message");
-				}
+			} else {
+				// TODO EXCEPTION numero de nombres y de tipos diferentes
 			}
-		} else {
+		} else if(parameters.length != 0){
 			// TODO EXCEPTION numero de nombres y de tipos diferentes
 		}
 	}
@@ -49,8 +65,10 @@ public class MethodInfo {
 	 */
 	public Map<String, Object> ArgKeyValueGenerator(Object[] args) {
 		Map<String, Object> result = new HashMap<String, Object>();
-		for (int i = 0; i < args.length; i++) {
-			result.put(qArgsNames[i], args[i]);
+		if(qArgsNames!=null){
+			for (int i = 0; i < args.length; i++) {
+				result.put(qArgsNames[i], args[i]);
+			}
 		}
 		return result;
 	}
@@ -66,6 +84,10 @@ public class MethodInfo {
 
 	public String getName() {
 		return this.name;
+	}
+	
+	public Class<?> getReturnType(){
+		return returnType;
 	}
 
 }
