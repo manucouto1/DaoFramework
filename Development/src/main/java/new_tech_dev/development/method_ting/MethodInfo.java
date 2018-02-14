@@ -1,22 +1,24 @@
 package new_tech_dev.development.method_ting;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import new_tech_dev.development.return_thing.Return;
-import new_tech_dev.development.return_thing.ReturnCaster;
-import new_tech_dev.development.return_thing.ReturnFactory;
+import new_tech_dev.development.base_entity.BaseEntity;
 
 public class MethodInfo {
 
 	private final String name;
 	private final String rawQuery;
 	private final String[] qArgsNames;
+	private final List<Class<?>> constructorClasses;
 	private final Map<String, Type> argNameType = new HashMap<>();
-	private final Class<?> returnType;
+	private final Class<?> returnClass;
 
 	/*
 	 * Se mira que el numero de parámetros de la consulta y del metodo de la
@@ -30,7 +32,8 @@ public class MethodInfo {
 		this.rawQuery = rawQuery;
 		this.name = metodo.getName();
 		this.qArgsNames = qArgsNames;
-		this.returnType = metodo.getReturnType();
+		this.returnClass = metodo.getReturnType();
+		this.constructorClasses =  generateConstructorTypes();
 		Parameter[] parameters = metodo.getParameters();
 		Type[] types = metodo.getParameterTypes();
 		if(qArgsNames != null){
@@ -51,6 +54,7 @@ public class MethodInfo {
 //					} else {
 //						
 //					}
+					generateConstructorTypes();
 				}
 			} else {
 				// TODO EXCEPTION numero de nombres y de tipos diferentes
@@ -76,6 +80,19 @@ public class MethodInfo {
 	public Type getType(String name ){
 		return argNameType.get(name);
 	}
+	
+	private List<Class<?>> generateConstructorTypes(){
+		List<Class<?>>ccClass = new ArrayList<>();
+		if(BaseEntity.class.isAssignableFrom(this.returnClass)){
+			for(Field field : this.returnClass.getFields()){
+				ccClass.add(field.getType());
+			}
+			
+		}else{
+			ccClass.add(returnClass);
+		}
+		return ccClass;
+	}
 
 	// Getters
 	public String getQuery() {
@@ -87,7 +104,10 @@ public class MethodInfo {
 	}
 	
 	public Class<?> getReturnType(){
-		return returnType;
+		return returnClass;
 	}
-
+	
+	public List<Class<?>> getConstructorTypes(){
+		return this.constructorClasses;
+	}
 }
