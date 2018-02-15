@@ -93,7 +93,7 @@ public abstract class QueryProcessor {
 			if (args.get(i).contains(".")) {
 				sb.append(getValueFromEntityObject(args.get(i), method, nameValue));
 			} else {
-				sb.append((String) nameValue.get(args.get(i)));
+				sb.append((String.valueOf(nameValue.get(args.get(i)))));
 			}
 		}
 		if(args.size()<part.size())

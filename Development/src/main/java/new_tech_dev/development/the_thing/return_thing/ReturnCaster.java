@@ -54,6 +54,7 @@ public class ReturnCaster {
 				e.printStackTrace();
 			}
 		}
+		
 		return cast(metodo,att.toArray());
 	}
 	

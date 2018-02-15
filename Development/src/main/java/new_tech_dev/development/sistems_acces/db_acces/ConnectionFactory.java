@@ -45,10 +45,14 @@ public class ConnectionFactory {
 		Statement stmt = (Statement) con.createStatement();
 		ResultSet rs = null;
 		try{
-			stmt.executeUpdate(query,java.sql.Statement.RETURN_GENERATED_KEYS);
+			rs = stmt.executeQuery(query);
+			if((rs==null) || (!rs.first())) {
+				rs = stmt.getGeneratedKeys();
+			}
 		}catch(Exception e){
 			try{
-				rs = stmt.executeQuery(query);
+			stmt.executeUpdate(query,java.sql.Statement.RETURN_GENERATED_KEYS);
+			if((rs==null) || (!rs.first())) rs = stmt.getGeneratedKeys();
 			}catch(Exception ex) {
 				try{
 					stmt.execute(query);
@@ -59,7 +63,7 @@ public class ConnectionFactory {
 				}
 			}
 		}
-		if((rs==null) || (!rs.next())) rs = stmt.getGeneratedKeys();
+		
 		return rs;
 		
 	}
