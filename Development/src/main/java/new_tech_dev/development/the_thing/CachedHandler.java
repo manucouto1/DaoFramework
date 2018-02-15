@@ -11,7 +11,7 @@ public class CachedHandler implements InvocationHandler{
 	
 	private DaoManager manager;
 	// TODO Implement Cache functionality
-	private BaseEntityCache<BaseEntity> cache = new BaseEntityCache<>();
+//	private BaseEntityCache<BaseEntity> cache = new BaseEntityCache<>();
 	
 	public CachedHandler(Class<?> clazz){
 		this.manager = new DaoManager(clazz);

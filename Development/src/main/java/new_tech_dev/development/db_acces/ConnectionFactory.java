@@ -46,10 +46,10 @@ public class ConnectionFactory {
 		ResultSet rs = null;
 		try{
 			stmt.executeUpdate(query,java.sql.Statement.RETURN_GENERATED_KEYS);
-			if((rs==null) || (!rs.next())) rs = stmt.getGeneratedKeys();
 		}catch(Exception e){
 			try{
 				rs = stmt.executeQuery(query);
+				
 			}catch(Exception ex) {
 				try{
 					stmt.execute(query);
@@ -60,6 +60,7 @@ public class ConnectionFactory {
 				}
 			}
 		}
+		if((rs==null) || (!rs.next())) rs = stmt.getGeneratedKeys();
 		return rs;
 		
 	}

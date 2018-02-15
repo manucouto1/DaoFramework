@@ -11,7 +11,6 @@ import new_tech_dev.development.method_ting.MethodInfo;
 public abstract class QueryProcessor {
 
 	public static String process(MethodInfo method, Map<String, Object> argNameValue) {
-
 		return (method.getQuery().contains("[")) ? parseQuery(method, argNameValue) : method.getQuery();
 	}
 
@@ -46,6 +45,7 @@ public abstract class QueryProcessor {
 		Class<?> clase;
 		try {
 			clase = Class.forName(method.getType(entity).getTypeName());
+			
 			Method getMethod = clase.getMethod("get" + attribute.substring(0, 1).toUpperCase() + attribute.substring(1),
 					(Class<?>[]) null);
 			clase.cast(valueObject);

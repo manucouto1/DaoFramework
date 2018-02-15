@@ -14,7 +14,7 @@ public class ReturnCaster {
 	
 	@SuppressWarnings("unchecked")
 	public static <T> T execute(ResultSet rs, MethodInfo metodo) {
-		return (metodo.getReturnType().equals(Void.class)) ? null : (metodo.getReturnType().equals(List.class)) ? (T) multyResult(rs, metodo) : singleResult(rs, metodo);
+		return (metodo.getReturnType().equals(Void.class)||metodo.getReturnType().equals(void.class)) ? null : (metodo.getReturnType().equals(List.class)) ? (T) multyResult(rs, metodo) : singleResult(rs, metodo);
 	}
 	
 	private static <T> List<T> multyResult(ResultSet rs, MethodInfo metodo){
@@ -28,10 +28,11 @@ public class ReturnCaster {
 		}
 		return null;
 	}
+
 	private static <T> T singleResult(ResultSet rs, MethodInfo metodo){
 		List<Object> att= new ArrayList<>();
 		List<Class<?>> argTypes = metodo.getConstructorTypes();
-		int i = 0;
+		int i = 1;
 		if(rs!=null){
 			try{
 				for(Class<?> clazz : argTypes){

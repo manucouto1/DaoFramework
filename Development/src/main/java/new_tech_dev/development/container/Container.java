@@ -17,21 +17,6 @@ public class Container {
 	
 	private Map<Class<?>, CachedDao<?>> daoContainer = new HashMap<Class<?>, CachedDao<?>>();
 	
-	public <T extends BaseEntity> void put (Class <?> param1, T param2) throws Exception {
-		
-		if(param1.isInstance(param2)){
-			contenedor.put(param1, param2);
-			if(null == daoContainer.get(param1)){
-				LOG.info(" PUTTING DAO : container: key > "+param1.getSimpleName()+" | value : Dao<"+param2+">");
-				daoContainer.put(param1, new CachedDao<T>(param1));
-			}else{
-				throw new Exception(" - ERROR: La clave ya existe");
-			}
-		}else{
-			throw new Exception(" - ERROR: Tipos erroneos");
-		}
-	}
-	
 	public <T extends BaseEntity> void put (Class <?> param1) throws Exception {
 		if(null == daoContainer.get(param1)){
 			LOG.info(" PUTTING DAO : container: key > "+param1.getSimpleName());

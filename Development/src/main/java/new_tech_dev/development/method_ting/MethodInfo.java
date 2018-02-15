@@ -27,39 +27,30 @@ public class MethodInfo {
 	 * con tipo de parametro, tambien se guarda la query cruda y los nombres de
 	 * los parametros
 	 */
-	public MethodInfo(Method metodo, String rawQuery, String[] qArgsNames) throws Exception {
+	public MethodInfo(Method metodo, String rawQuery, String[] qArgsNames, Class<?> V, Class<?> K) throws Exception {
 
 		this.rawQuery = rawQuery;
 		this.name = metodo.getName();
 		this.qArgsNames = qArgsNames;
 		this.returnClass = metodo.getReturnType();
 		this.constructorClasses =  generateConstructorTypes();
-		Parameter[] parameters = metodo.getParameters();
-		Type[] types = metodo.getParameterTypes();
+		
+		Type[] types = typeFromGenericParams(V,K,metodo.getParameters());
+		
 		if(qArgsNames != null){
-			if (parameters.length == qArgsNames.length) {
-				for (int i = 0; i < parameters.length; i++) {
-					if((Type) parameters[i].getType() == types[i]){
-						this.argNameType.put(parameters[i].getName(), types[i]);
-					} else {
-						throw new IllegalArgumentException(" TODO Exception Message");
-					}
+			if (types.length == qArgsNames.length) {
+				for (int i = 0; i < types.length; i++) {
+					
+					this.argNameType.put(qArgsNames[i], types[i]);
 					
 //					TODO Usar Spring para obtener el nombre de los parametros del metodo
-//					if (!parameters[i].isNamePresent()) {
-//						throw new IllegalArgumentException("Parameter names are not present!");
-//					}
-//					if (parameters[i].getName().equals(qArgsNames[i])) {
-//						this.argNameType.put(parameters[i].getName(), types[i]);
-//					} else {
-//						
-//					}
+
 					generateConstructorTypes();
 				}
 			} else {
 				// TODO EXCEPTION numero de nombres y de tipos diferentes
 			}
-		} else if(parameters.length != 0){
+		} else if(types.length != 0){
 			// TODO EXCEPTION numero de nombres y de tipos diferentes
 		}
 	}
@@ -87,11 +78,23 @@ public class MethodInfo {
 			for(Field field : this.returnClass.getFields()){
 				ccClass.add(field.getType());
 			}
-			
 		}else{
 			ccClass.add(returnClass);
 		}
 		return ccClass;
+	}
+	
+	private Type[] typeFromGenericParams(Class<?> V, Class<?> K, Parameter[] parameters){
+		Type [] types = new Type[parameters.length];
+		for(int x=0; x < parameters.length; x++){
+			System.out.println(" @@## type >>>>> "+parameters[x].getParameterizedType().getTypeName());
+			System.out.println(" @@## V "+V);
+			System.out.println(" @@## K "+K);
+//			types[x] = (parameters[x].getParameterizedType().getTypeName().equals(V.getName()))?V:(parameters[x].getParameterizedType().getTypeName().equals(K.getName()))?K:parameters[x].getType();
+//			System.out.println(" @@## final Types > "+types[x]);
+		}
+		return types;
+		
 	}
 
 	// Getters
