@@ -8,16 +8,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import new_tech_dev.development.base_shit.base_entity.BaseEntity;
-import new_tech_dev.development.the_thing.method_thing.MethodInfo;
+import new_tech_dev.development.the_thing.method_thing.DaoMethod;
 
 public class ReturnCaster {
 	
 	@SuppressWarnings("unchecked")
-	public static <T> T execute(ResultSet rs, MethodInfo metodo) {
+	public static <T> T execute(ResultSet rs, DaoMethod metodo) {
 		return (metodo.getReturnType().equals(Void.class)||metodo.getReturnType().equals(void.class)) ? null : (metodo.getReturnType().equals(List.class)) ? (T) multyResult(rs, metodo) : singleResult(rs, metodo);
 	}
 	
-	private static <T> List<T> multyResult(ResultSet rs, MethodInfo metodo){
+	private static <T> List<T> multyResult(ResultSet rs, DaoMethod metodo){
 		List<T> result = new ArrayList<>();
 		try {
 			while (rs.next()) {
@@ -29,7 +29,7 @@ public class ReturnCaster {
 		return null;
 	}
 
-	private static <T> T singleResult(ResultSet rs, MethodInfo metodo){
+	private static <T> T singleResult(ResultSet rs, DaoMethod metodo){
 		List<Object> att= new ArrayList<>();
 		List<Class<?>> argTypes = metodo.getConstructorTypes();
 		int i = 1;
@@ -59,7 +59,7 @@ public class ReturnCaster {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private static <T> T cast(MethodInfo metodo, Object[] params){
+	private static <T> T cast(DaoMethod metodo, Object[] params){
 		Constructor<T> constructor = null;
 		Constructor<T>[] constructors;
 		T objeto = null;

@@ -6,15 +6,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import new_tech_dev.development.the_thing.method_thing.MethodInfo;
+import new_tech_dev.development.the_thing.method_thing.DaoMethod;
 
 public abstract class QueryProcessor {
 
-	public static String process(MethodInfo method, Map<String, Object> argNameValue) {
+	public static String process(DaoMethod method, Map<String, Object> argNameValue) {
 		return (method.getQuery().contains("[")) ? parseQuery(method, argNameValue) : method.getQuery();
 	}
+	
+	public static List<String> getTockens(String query){
+		List<String> tokens = new ArrayList<>();
+		if(query.contains("[")){
+			String[] queryParts = query.split("\\[");
+			String[] aux;
+			for(String part: queryParts){
+				if(part.contains("]")){
+					aux = part.split("\\]");
+					tokens.add(aux[0]);
+				}
+			}
+		}
+		
+		return tokens;
+	}
 
-	private static String parseQuery(MethodInfo method, Map<String, Object> nameValue) {
+	private static String parseQuery(DaoMethod method, Map<String, Object> nameValue) {
 		String[] aux;
 		String[] queryParts = method.getQuery().split("\\[");
 		List<String> queryArgs = new ArrayList<>();
@@ -32,7 +48,7 @@ public abstract class QueryProcessor {
 		return buildQuery(queryFragments,queryArgs,method,nameValue);
 	}
 
-	private static String getValueFromEntityObject(String argument, MethodInfo method, Map<String,Object> valueObject) {
+	private static String getValueFromEntityObject(String argument, DaoMethod method, Map<String,Object> valueObject) {
 		String entity = argument.split("\\.")[0].trim();
 		String attribute = argument.split("\\.")[1].trim();
 		Class<?> clase;
@@ -85,7 +101,7 @@ public abstract class QueryProcessor {
 		return null;
 	}
 	
-	private static String buildQuery(List<String> part, List<String> args, MethodInfo method, Map<String, Object> nameValue){
+	private static String buildQuery(List<String> part, List<String> args, DaoMethod method, Map<String, Object> nameValue){
 		int i;
 		StringBuilder sb = new StringBuilder();
 		for (i = 0; i < args.size(); i++){
