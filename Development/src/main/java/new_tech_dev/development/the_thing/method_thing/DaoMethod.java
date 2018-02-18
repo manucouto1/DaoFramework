@@ -7,11 +7,14 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.mysql.cj.api.jdbc.JdbcConnection;
+import com.mysql.cj.jdbc.PreparedStatement;
 
 import new_tech_dev.development.base_shit.base_entity.BaseEntity;
 import new_tech_dev.development.the_thing.processor_thing.QueryProcessor;
@@ -60,14 +63,21 @@ public class DaoMethod {
 	/*
 	 * Este metodod pasa los argumentos y la querypreparada al QueryProcesor
 	 * Devuelve el resultSet de la consulta
+	 * 
+	 * TODO Implementar el prepared statement 
 	 */
-	public ResultSet execute(Connection con, Object[] args) {
+	public ResultSet execute(JdbcConnection con, Object[] args) throws SQLException {
+		
 		String[] finalArgs = new String[args.length];
+		String finalQuery;
+		PreparedStatement pStmt ;
 		
 		for(int i = 0; i < args.length; i++){
 			finalArgs[i] = getValueFromEntityObject(qTokens.get(i),argKeyValueGenerator(args));
 		}
 		
+		finalQuery = QueryProcessor.process(this);
+		pStmt = new PreparedStatement(con, finalQuery);
 		
 		return null;
 	}
@@ -175,9 +185,6 @@ public class DaoMethod {
 		return null;
 	}
 
-	public Type getType(String name) {
-		return argNameType.get(name);
-	}
 
 	// Getters
 	public String getQuery() {
@@ -194,5 +201,9 @@ public class DaoMethod {
 
 	public List<Class<?>> getConstructorTypes() {
 		return this.constructorClasses;
+	}
+	
+	public Type getType(String name) {
+		return argNameType.get(name);
 	}
 }

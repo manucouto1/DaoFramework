@@ -2,9 +2,10 @@ package new_tech_dev.development.the_thing.executor_thing;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
-import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.mysql.cj.api.jdbc.JdbcConnection;
 
 import new_tech_dev.development.sistems_acces.dom_acces.DomReader;
 import new_tech_dev.development.the_thing.method_thing.DaoMethod;
@@ -47,7 +48,7 @@ public class DaoManager {
 	 * recupera el DaoMethod del mapa, crea un PreparedStatement 
 	 * pasa los argumentos, ejecuta el prepared stmt y procesa el resultado
 	 */
-	public Object execute(String name, Object[] args, Connection conect) {
+	public Object execute(String name, Object[] args, JdbcConnection conect) {
 		try {
 			return ReturnCaster.execute(daoMethods.get(name).execute(conect, args),daoMethods.get(name));
 		} catch (Exception e) {

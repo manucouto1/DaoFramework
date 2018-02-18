@@ -1,17 +1,14 @@
 package new_tech_dev.development.the_thing.processor_thing;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import new_tech_dev.development.the_thing.method_thing.DaoMethod;
 
 public abstract class QueryProcessor {
 
-	public static String process(DaoMethod method, Map<String, Object> argNameValue) {
-		return (method.getQuery().contains("[")) ? parseQuery(method, argNameValue) : method.getQuery();
+	public static String process(DaoMethod method) {
+		return (method.getQuery().contains("[")) ? parseQuery(method) : method.getQuery();
 	}
 	
 	public static List<String> getTockens(String query){
@@ -30,7 +27,7 @@ public abstract class QueryProcessor {
 		return tokens;
 	}
 
-	private static String parseQuery(DaoMethod method, Map<String, Object> nameValue) {
+	private static String parseQuery(DaoMethod method) {
 		String[] aux;
 		String[] queryParts = method.getQuery().split("\\[");
 		List<String> queryArgs = new ArrayList<>();
@@ -45,72 +42,15 @@ public abstract class QueryProcessor {
 				queryFragments.add(part);
 			}
 		
-		return buildQuery(queryFragments,queryArgs,method,nameValue);
-	}
-
-	private static String getValueFromEntityObject(String argument, DaoMethod method, Map<String,Object> valueObject) {
-		String entity = argument.split("\\.")[0].trim();
-		String attribute = argument.split("\\.")[1].trim();
-		Class<?> clase;
-		try {
-			clase = (Class<?>) method.getType(entity);
-			Method getMethod = clase.getMethod("get" + attribute.substring(0, 1).toUpperCase() + attribute.substring(1),
-					(Class<?>[]) null);
-			
-			String returnValue = getterResolve(getMethod,valueObject.get(entity));
-			return (returnValue!=null)?returnValue:null;
-			
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return null;
+		return buildQuery(queryFragments,queryArgs);
 	}
 	
-	private static <T> String getterResolve(Method getMethod,T valueObject){
-		
-		Object value = null;
-		String stringValue;
-		try {
-			if(valueObject!=null){
-				value = getMethod.invoke(valueObject, (Object[]) null);
-				stringValue = (value!=null)?String.valueOf(value):null;
-			}else{
-				stringValue = "null";
-			}
-			return (getMethod.getReturnType().equals(String.class))
-			? "'" + stringValue + "'" : stringValue;
-			
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	private static String buildQuery(List<String> part, List<String> args, DaoMethod method, Map<String, Object> nameValue){
+	private static String buildQuery(List<String> part, List<String> args){
 		int i;
 		StringBuilder sb = new StringBuilder();
 		for (i = 0; i < args.size(); i++){
 			sb.append(part.get(i));
-			if (args.get(i).contains(".")) {
-				sb.append(getValueFromEntityObject(args.get(i), method, nameValue));
-			} else {
-				sb.append((String.valueOf(nameValue.get(args.get(i)))));
-			}
+			sb.append("?");
 		}
 		if(args.size()<part.size())
 			sb.append(part.get(i));
