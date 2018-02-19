@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -13,21 +14,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.mysql.cj.api.jdbc.JdbcConnection;
-import com.mysql.cj.jdbc.PreparedStatement;
-
 import new_tech_dev.development.base_shit.base_entity.BaseEntity;
 import new_tech_dev.development.the_thing.processor_thing.QueryProcessor;
 
 public class DaoMethod {
 
 	private final String name;
-	private final String rawQuery;
 	private final String[] qArgsNames;
 	private final List<Class<?>> constructorClasses;
 	private final Map<String, Type> argNameType = new HashMap<>();
 	private final Class<?> returnClass;
-	private final List<String> qTokens;
+	private final QueryProcessor processor;
+	
 
 	/*
 	 * Se mira que el numero de parámetros de la consulta y del metodo de la
@@ -38,12 +36,11 @@ public class DaoMethod {
 	 */
 	public DaoMethod(Method metodo, String rawQuery, String[] qArgsNames, Class<?> V, Class<?> K) throws Exception {
 
-		this.rawQuery = rawQuery;
 		this.name = metodo.getName();
 		this.qArgsNames = qArgsNames;
 		this.returnClass = metodo.getReturnType();
 		this.constructorClasses = generateConstructorTypes();
-		this.qTokens = QueryProcessor.getTockens(rawQuery);
+		this.processor = new QueryProcessor(rawQuery);
 
 		Type[] types = typeFromGenericParams(V, K, metodo.getParameters());
 
@@ -66,20 +63,21 @@ public class DaoMethod {
 	 * 
 	 * TODO Implementar el prepared statement 
 	 */
-	public ResultSet execute(JdbcConnection con, Object[] args) throws SQLException {
+	public ResultSet execute(Connection con, Object[] args) throws SQLException {
 		
-		String[] finalArgs = new String[args.length];
-		String finalQuery;
 		PreparedStatement pStmt ;
 		
-		for(int i = 0; i < args.length; i++){
-			finalArgs[i] = getValueFromEntityObject(qTokens.get(i),argKeyValueGenerator(args));
+		pStmt =con.prepareStatement(processor.getPreparedQuery());
+		if(args!=null){
+			for(int i = 0; i < args.length; i++){
+				System.out.println(" @@## query >> "+processor.getPreparedQuery());
+				System.out.println(" @@## Arg >> "+processor.getTokens().get(i));
+				System.out.println(" @@## Value >> "+getValueFromEntityObject(processor.getTokens().get(i),argKeyValueGenerator(args)));
+				pStmt.setString(i+1, getValueFromEntityObject(processor.getTokens().get(i),argKeyValueGenerator(args)));
+			}
 		}
-		
-		finalQuery = QueryProcessor.process(this);
-		pStmt = new PreparedStatement(con, finalQuery);
-		
-		return null;
+		System.out.println("@@## PreparedQuery >> "+processor.getPreparedQuery());
+		return pStmt.executeQuery();
 	}
 
 	/*
@@ -187,10 +185,6 @@ public class DaoMethod {
 
 
 	// Getters
-	public String getQuery() {
-		return this.rawQuery;
-	}
-
 	public String getName() {
 		return this.name;
 	}

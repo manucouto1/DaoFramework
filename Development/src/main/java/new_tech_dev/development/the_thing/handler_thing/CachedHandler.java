@@ -3,6 +3,7 @@ package new_tech_dev.development.the_thing.handler_thing;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
+import new_tech_dev.development.sistems_acces.db_acces.ConnectionFactory;
 import new_tech_dev.development.the_thing.executor_thing.DaoManager;
 
 public class CachedHandler implements InvocationHandler{
@@ -17,7 +18,7 @@ public class CachedHandler implements InvocationHandler{
 	//TODO ver que información se puede sacar del Method del invocke
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-		return manager.execute(method.getName(), args, null);
+		return manager.execute(method.getName(), args, ConnectionFactory.getConnection());
 	}
 
 }

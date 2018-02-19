@@ -8,6 +8,7 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.mysql.cj.api.jdbc.JdbcConnection;
 import com.mysql.cj.api.jdbc.Statement;
 import com.mysql.cj.jdbc.Driver;
 
@@ -36,7 +37,7 @@ public class ConnectionFactory {
 	}
 	
 	public static Connection getConnection() throws Exception{
-        return dbDriver.connect(url,dbProperties);
+        return  dbDriver.connect(url,dbProperties);
 	}
 	
 	public static ResultSet execute(String query) throws Exception{

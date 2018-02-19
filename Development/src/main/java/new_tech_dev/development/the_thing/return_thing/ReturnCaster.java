@@ -14,7 +14,7 @@ public class ReturnCaster {
 	
 	@SuppressWarnings("unchecked")
 	public static <T> T execute(ResultSet rs, DaoMethod metodo) {
-		return (metodo.getReturnType().equals(Void.class)||metodo.getReturnType().equals(void.class)) ? null : (metodo.getReturnType().equals(List.class)) ? (T) multyResult(rs, metodo) : singleResult(rs, metodo);
+		return (metodo.getReturnType().equals(Void.class)||metodo.getReturnType().equals(void.class)) ? null : (metodo.getReturnType().equals(List.class)) ? (T) multyResult(rs, metodo) : initSingle(rs, metodo);
 	}
 	
 	private static <T> List<T> multyResult(ResultSet rs, DaoMethod metodo){
@@ -81,5 +81,17 @@ public class ReturnCaster {
 			return (metodo.getReturnType().equals(Void.TYPE))?null:(params.length==0)?null:(T) params[0];
 		}
 		
+	}
+	
+	private static <T> T initSingle (ResultSet rs, DaoMethod method) {
+		
+		try {
+			if(rs.next()){
+				return singleResult(rs,method);
+			} else return null;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }
