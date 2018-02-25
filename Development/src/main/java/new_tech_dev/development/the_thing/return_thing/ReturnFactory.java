@@ -1,12 +1,13 @@
 package new_tech_dev.development.the_thing.return_thing;
 
-import java.awt.List;
+import java.util.List;
+import java.lang.reflect.Method;
 
 public class ReturnFactory {
 	
-	public static Return<?,?> getReturnCaster(Class<?> returnType){
-		
-		return List.class.isAssignableFrom(returnType)?new ReturnGenericList<>():new ReturnGeneric<>();
+	public static <T> Return<T,?> getReturnCaster(Method metodo, Class<T> returnClass){
+		return List.class.isAssignableFrom(metodo.getReturnType()) ? new ReturnGenericList<T>(metodo, returnClass)
+				: new ReturnGeneric<T>(metodo, returnClass);
 	}
 	
 }

@@ -19,7 +19,10 @@ public class DomReader {
 	
 	private Map<String,String[]> args = new HashMap<>();
 	
+	private Map<String,Boolean> generatedKeys = new HashMap<>();
+	
 	private Document document;
+	
 	
 	public DomReader(String url) {
 		
@@ -48,7 +51,12 @@ public class DomReader {
 					if(null!=e.getAttribute("var")){
 						args.put(e.getAttribute("name").getValue(),e.getAttribute("var").getValue().split(","));
 					}
-				}
+					if(null!=e.getAttribute("generatedKeys")){
+						generatedKeys.put(e.getAttribute("name").getValue(),Boolean.valueOf(e.getAttribute("generatedKeys").getValue()));
+					} else {
+						generatedKeys.put(e.getAttribute("name").getValue(),false);
+					}
+				} 
 				i++;
 			}
 			
@@ -63,6 +71,14 @@ public class DomReader {
 	
 	public Map<String,String[]> getParams(){
 		return args;
+	}
+	
+	public Boolean hasGeneratedKeys(String name){
+		
+		return (generatedKeys.get(name)!=null)?generatedKeys.get(name):false;
+	}
+	public Map<String,Boolean> generatedKeys(){
+		return generatedKeys;
 	}
 	
 

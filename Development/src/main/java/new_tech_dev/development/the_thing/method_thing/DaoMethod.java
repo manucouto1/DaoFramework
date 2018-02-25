@@ -1,30 +1,27 @@
 package new_tech_dev.development.the_thing.method_thing;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import new_tech_dev.development.base_shit.base_entity.BaseEntity;
-import new_tech_dev.development.the_thing.processor_thing.QueryProcessor;
+import new_tech_dev.development.the_thing.query_thing.executor_thing.QueryExecutor;
+import new_tech_dev.development.the_thing.query_thing.processor_thing.QueryProcessor;
+import new_tech_dev.development.the_thing.return_thing.Return;
 
 public class DaoMethod {
 
 	private final String name;
 	private final String[] qArgsNames;
-	private final List<Class<?>> constructorClasses;
 	private final Map<String, Type> argNameType = new HashMap<>();
-	private final Class<?> returnClass;
 	private final QueryProcessor processor;
+	private boolean returnGeneratedKeys;
+	private final Return<?,?> returnCaster;
 	
 
 	/*
@@ -34,16 +31,14 @@ public class DaoMethod {
 	 * con tipo de parametro, tambien se guarda la query cruda y los nombres de
 	 * los parametros
 	 */
-	public DaoMethod(Method metodo, String rawQuery, String[] qArgsNames, Class<?> V, Class<?> K) throws Exception {
+	public DaoMethod(Method metodo, String rawQuery, String[] qArgsNames, Type[] types, Return<?,?> returnCaster, Boolean generatedKeys) throws Exception {
 
 		this.name = metodo.getName();
 		this.qArgsNames = qArgsNames;
-		this.returnClass = metodo.getReturnType();
-		this.constructorClasses = generateConstructorTypes();
+		this.returnCaster = returnCaster;
 		this.processor = new QueryProcessor(rawQuery);
-
-		Type[] types = typeFromGenericParams(V, K, metodo.getParameters());
-
+		this.returnGeneratedKeys = (generatedKeys!=null)?generatedKeys:false;
+		
 		if (qArgsNames != null) {
 			if (types.length == qArgsNames.length) {
 				for (int i = 0; i < types.length; i++) {
@@ -60,24 +55,33 @@ public class DaoMethod {
 	/*
 	 * Este metodod pasa los argumentos y la querypreparada al QueryProcesor
 	 * Devuelve el resultSet de la consulta
-	 * 
-	 * TODO Implementar el prepared statement 
 	 */
-	public ResultSet execute(Connection con, Object[] args) throws SQLException {
+	public Object execute(Connection con, Object[] args) throws Exception {
 		
 		PreparedStatement pStmt ;
+		QueryExecutor qExec;
 		
-		pStmt =con.prepareStatement(processor.getPreparedQuery());
+		if(returnGeneratedKeys){
+			pStmt = con.prepareStatement(processor.getPreparedQuery(), Statement.RETURN_GENERATED_KEYS);
+		} else {
+			pStmt = con.prepareStatement(processor.getPreparedQuery());
+		}
+		
 		if(args!=null){
-			for(int i = 0; i < args.length; i++){
-				System.out.println(" @@## query >> "+processor.getPreparedQuery());
-				System.out.println(" @@## Arg >> "+processor.getTokens().get(i));
-				System.out.println(" @@## Value >> "+getValueFromEntityObject(processor.getTokens().get(i),argKeyValueGenerator(args)));
-				pStmt.setString(i+1, getValueFromEntityObject(processor.getTokens().get(i),argKeyValueGenerator(args)));
+			List<String> tokens = processor.getTokens();
+			for(int i = 0; i < tokens.size(); i++){
+				if(tokens.get(i).contains(".")){
+					pStmt.setString(i+1, getValueFromEntityObject(processor.getTokens().get(i),argKeyValueGenerator(args)));
+				}else{
+					pStmt.setString(i+1, String.valueOf(argKeyValueGenerator(args).get(processor.getTokens().get(i))));
+				}
+				
 			}
 		}
-		System.out.println("@@## PreparedQuery >> "+processor.getPreparedQuery());
-		return pStmt.executeQuery();
+		qExec = new QueryExecutor(pStmt,processor.getPreparedQuery());
+		// Provisional
+		// TODO usar un Strategy
+		return this.returnCaster.execute(qExec.execute());
 	}
 
 	/*
@@ -93,36 +97,7 @@ public class DaoMethod {
 		return result;
 	}
 
-	/*
-	 * Recupera una lista con los tipos del constructor de la Clase que devuelve
-	 * el metodo
-	 */
-	private List<Class<?>> generateConstructorTypes() {
-		List<Class<?>> ccClass = new ArrayList<>();
-		if (BaseEntity.class.isAssignableFrom(this.returnClass)) {
-			for (Field field : this.returnClass.getFields()) {
-				ccClass.add(field.getType());
-			}
-		} else {
-			ccClass.add(returnClass);
-		}
-		return ccClass;
-	}
-
-	/*
-	 * Devuelve los tipos de los parametros del metodo, si es generico devuelve
-	 * el tipo parametrizado del generico
-	 */
-	private Type[] typeFromGenericParams(Class<?> V, Class<?> K, Parameter[] parameters) {
-		Type[] types = new Type[parameters.length];
-		for (int x = 0; x < parameters.length; x++) {
-			types[x] = (parameters[x].getParameterizedType().getTypeName().equalsIgnoreCase("V")) ? V
-					: (parameters[x].getParameterizedType().getTypeName().equalsIgnoreCase("K")) ? K
-							: parameters[x].getType();
-		}
-		return types;
-
-	}
+	
 	/*
 	 * Convierte el token a valor final para insertar en la consulta
 	 * TODO creo que el map es inecesario
@@ -167,8 +142,7 @@ public class DaoMethod {
 			}else{
 				stringValue = "null";
 			}
-			return (getMethod.getReturnType().equals(String.class))
-			? "'" + stringValue + "'" : stringValue;
+			return stringValue;
 			
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
@@ -188,16 +162,12 @@ public class DaoMethod {
 	public String getName() {
 		return this.name;
 	}
-
-	public Class<?> getReturnType() {
-		return returnClass;
-	}
-
-	public List<Class<?>> getConstructorTypes() {
-		return this.constructorClasses;
-	}
 	
 	public Type getType(String name) {
 		return argNameType.get(name);
+	}
+	
+	public String getQuery(){
+		return processor.getPreparedQuery();
 	}
 }

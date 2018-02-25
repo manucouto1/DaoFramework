@@ -1,4 +1,4 @@
-package new_tech_dev.development.the_thing.processor_thing;
+package new_tech_dev.development.the_thing.query_thing.processor_thing;
 
 import java.util.ArrayList;
 import java.util.List;
