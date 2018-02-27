@@ -8,7 +8,6 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mysql.cj.api.jdbc.JdbcConnection;
 import com.mysql.cj.api.jdbc.Statement;
 import com.mysql.cj.jdbc.Driver;
 
@@ -38,35 +37,6 @@ public class ConnectionFactory {
 	
 	public static Connection getConnection() throws Exception{
         return  dbDriver.connect(url,dbProperties);
-	}
-	
-	public static ResultSet execute(String query) throws Exception{
-		LOG.info(" PROCESSING:  Ejecutando Query: \n "+query);
-		Connection con = getConnection();
-		Statement stmt = (Statement) con.createStatement();
-		ResultSet rs = null;
-		try{
-			rs = stmt.executeQuery(query);
-			if((rs==null) || (!rs.first())) {
-				rs = stmt.getGeneratedKeys();
-			}
-		}catch(Exception e){
-			try{
-			stmt.executeUpdate(query,java.sql.Statement.RETURN_GENERATED_KEYS);
-			if((rs==null) || (!rs.first())) rs = stmt.getGeneratedKeys();
-			}catch(Exception ex) {
-				try{
-					stmt.execute(query);
-				}catch(Exception exc){
-					exc.printStackTrace();
-					ex.printStackTrace();
-					
-				}
-			}
-		}
-		
-		return rs;
-		
 	}
 	
 	public static void closeConnection(Connection con, Statement st, ResultSet rs) throws Exception{

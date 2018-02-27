@@ -1,13 +1,9 @@
 package new_tech_dev.development.the_thing.return_thing;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-
-import new_tech_dev.development.base_shit.base_entity.BaseEntity;
-
 
 public class ReturnGeneric <T> extends Return<T,T> {
 	
@@ -28,7 +24,6 @@ public class ReturnGeneric <T> extends Return<T,T> {
 			rs.next();
 			try{
 				for(Class<?> clazz : constructorClasses){
-					System.out.println("@@## CLASS >> "+clazz);
 					if (clazz.equals(String.class)) {
 						att.add(rs.getString(i));
 					}
@@ -52,23 +47,6 @@ public class ReturnGeneric <T> extends Return<T,T> {
 		}
 		
 		return cast(att.toArray(), this.returnClass);
-	}
-	
-	/*
-	 * Recupera una lista con los tipos del constructor de la Clase que devuelve
-	 * el metodo
-	 */
-	private List<Class<?>> generateConstructorTypes(Class<?> returnClass) {
-		List<Class<?>> ccClass = new ArrayList<>();
-		System.out.println("@@## returnType >>> "+returnClass);
-		if (BaseEntity.class.isAssignableFrom(returnClass)) {
-			for (Field field : returnClass.getFields()) {
-				ccClass.add(field.getType());
-			}
-		} else {
-			ccClass.add(returnClass);
-		}
-		return ccClass;
 	}
 	
 }

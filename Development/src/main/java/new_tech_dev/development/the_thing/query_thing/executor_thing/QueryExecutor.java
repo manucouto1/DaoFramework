@@ -1,6 +1,5 @@
 package new_tech_dev.development.the_thing.query_thing.executor_thing;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 

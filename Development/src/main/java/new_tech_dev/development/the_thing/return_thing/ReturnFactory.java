@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 public class ReturnFactory {
 	
 	public static <T> Return<T,?> getReturnCaster(Method metodo, Class<T> returnClass){
-		return List.class.isAssignableFrom(metodo.getReturnType()) ? new ReturnGenericList<T>(metodo, returnClass)
+		return List.class.isAssignableFrom(metodo.getReturnType()) ? new ReturnGenericList<T>(returnClass)
 				: new ReturnGeneric<T>(metodo, returnClass);
 	}
 	

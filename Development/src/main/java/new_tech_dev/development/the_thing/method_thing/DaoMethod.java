@@ -21,8 +21,7 @@ public class DaoMethod {
 	private final Map<String, Type> argNameType = new HashMap<>();
 	private final QueryProcessor processor;
 	private boolean returnGeneratedKeys;
-	private final Return<?,?> returnCaster;
-	
+	private final Return<?, ?> returnCaster;
 
 	/*
 	 * Se mira que el numero de parámetros de la consulta y del metodo de la
@@ -31,14 +30,15 @@ public class DaoMethod {
 	 * con tipo de parametro, tambien se guarda la query cruda y los nombres de
 	 * los parametros
 	 */
-	public DaoMethod(Method metodo, String rawQuery, String[] qArgsNames, Type[] types, Return<?,?> returnCaster, Boolean generatedKeys) throws Exception {
+	public DaoMethod(Method metodo, String rawQuery, String[] qArgsNames, Type[] types, Return<?, ?> returnCaster,
+			Boolean generatedKeys) throws Exception {
 
 		this.name = metodo.getName();
 		this.qArgsNames = qArgsNames;
 		this.returnCaster = returnCaster;
 		this.processor = new QueryProcessor(rawQuery);
-		this.returnGeneratedKeys = (generatedKeys!=null)?generatedKeys:false;
-		
+		this.returnGeneratedKeys = (generatedKeys != null) ? generatedKeys : false;
+
 		if (qArgsNames != null) {
 			if (types.length == qArgsNames.length) {
 				for (int i = 0; i < types.length; i++) {
@@ -57,30 +57,30 @@ public class DaoMethod {
 	 * Devuelve el resultSet de la consulta
 	 */
 	public Object execute(Connection con, Object[] args) throws Exception {
-		
-		PreparedStatement pStmt ;
+
+		PreparedStatement pStmt;
 		QueryExecutor qExec;
-		
-		if(returnGeneratedKeys){
+
+		if (returnGeneratedKeys) {
 			pStmt = con.prepareStatement(processor.getPreparedQuery(), Statement.RETURN_GENERATED_KEYS);
 		} else {
 			pStmt = con.prepareStatement(processor.getPreparedQuery());
 		}
-		
-		if(args!=null){
+
+		if (args != null) {
 			List<String> tokens = processor.getTokens();
-			for(int i = 0; i < tokens.size(); i++){
-				if(tokens.get(i).contains(".")){
-					pStmt.setString(i+1, getValueFromEntityObject(processor.getTokens().get(i),argKeyValueGenerator(args)));
-				}else{
-					pStmt.setString(i+1, String.valueOf(argKeyValueGenerator(args).get(processor.getTokens().get(i))));
+			for (int i = 0; i < tokens.size(); i++) {
+				if (tokens.get(i).contains(".")) {
+					pStmt.setString(i + 1,
+							getValueFromEntityObject(processor.getTokens().get(i), argKeyValueGenerator(args)));
+				} else {
+					pStmt.setString(i + 1,
+							String.valueOf(argKeyValueGenerator(args).get(processor.getTokens().get(i))));
 				}
-				
+
 			}
 		}
-		qExec = new QueryExecutor(pStmt,processor.getPreparedQuery());
-		// Provisional
-		// TODO usar un Strategy
+		qExec = new QueryExecutor(pStmt, processor.getPreparedQuery());
 		return this.returnCaster.execute(qExec.execute());
 	}
 
@@ -97,12 +97,11 @@ public class DaoMethod {
 		return result;
 	}
 
-	
 	/*
-	 * Convierte el token a valor final para insertar en la consulta
-	 * TODO creo que el map es inecesario
+	 * Convierte el token a valor final para insertar en la consulta TODO creo
+	 * que el map es inecesario
 	 */
-	private String getValueFromEntityObject(String argument, Map<String,Object> valueObject) {
+	private String getValueFromEntityObject(String argument, Map<String, Object> valueObject) {
 		String entity = argument.split("\\.")[0].trim();
 		String attribute = argument.split("\\.")[1].trim();
 		Class<?> clase;
@@ -110,10 +109,10 @@ public class DaoMethod {
 			clase = (Class<?>) getType(entity);
 			Method getMethod = clase.getMethod("get" + attribute.substring(0, 1).toUpperCase() + attribute.substring(1),
 					(Class<?>[]) null);
-			
-			String returnValue = getterResolve(getMethod,valueObject.get(entity));
-			return (returnValue!=null)?returnValue:null;
-			
+
+			String returnValue = getterResolve(getMethod, valueObject.get(entity));
+			return (returnValue != null) ? returnValue : null;
+
 		} catch (NoSuchMethodException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -127,23 +126,23 @@ public class DaoMethod {
 
 		return null;
 	}
-	
+
 	/*
 	 * Ejecutan el getter del atributo a resolver
 	 */
-	private <T> String getterResolve(Method getMethod,T valueObject){
-		
+	private <T> String getterResolve(Method getMethod, T valueObject) {
+
 		Object value = null;
 		String stringValue;
 		try {
-			if(valueObject!=null){
+			if (valueObject != null) {
 				value = getMethod.invoke(valueObject, (Object[]) null);
-				stringValue = (value!=null)?String.valueOf(value):null;
-			}else{
+				stringValue = (value != null) ? String.valueOf(value) : null;
+			} else {
 				stringValue = "null";
 			}
 			return stringValue;
-			
+
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -157,17 +156,16 @@ public class DaoMethod {
 		return null;
 	}
 
-
 	// Getters
 	public String getName() {
 		return this.name;
 	}
-	
+
 	public Type getType(String name) {
 		return argNameType.get(name);
 	}
-	
-	public String getQuery(){
+
+	public String getQuery() {
 		return processor.getPreparedQuery();
 	}
 }
